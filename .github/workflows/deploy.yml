@@ -27,6 +27,12 @@ jobs:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
+      - name: Print Hugo Version
+        run: hugo version
+
+      - name: Print Hugo Module Status
+        run: hugo mod graph
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4

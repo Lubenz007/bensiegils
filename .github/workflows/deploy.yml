@@ -31,6 +31,9 @@ jobs:
         id: pages
         uses: actions/configure-pages@v4
 
+      - name: Clear Hugo Module Cache
+        run: rm -rf ~/.cache/hugo_cache && rm -rf ~/.hugo_cache && rm -rf ./resources
+
       - name: Download Hugo Modules
         run: hugo mod tidy
 

@@ -61,7 +61,7 @@ jobs:
         run: |
           hugo version
           hugo mod tidy
-          hugo --ignoreVendor --minify --logLevel info
+          hugo --ignoreVendorPaths="github.com/**" --minify --logLevel info
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

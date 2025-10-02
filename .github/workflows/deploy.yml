@@ -47,7 +47,7 @@ jobs:
           HUGO_BASEURL: 'https://lubenz007.github.io/bensiegils/'
         run: |
           hugo version
-          hugo --minify --debug
+          hugo --minify --logLevel info
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -11,6 +11,17 @@ enableGitInfo = true
 # Enable robots.txt generation
 enableRobotsTXT = true
 
+# Asset handling
+[security.exec]
+  allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$']
+
+[security.funcs]
+  getenv = ['^HUGO_']
+
+[security.http]
+  methods = ['(?i)GET|POST']
+  urls = ['.*']
+
 # Pagination configuration
 [pagination]
   pagerSize = 50
@@ -30,7 +41,7 @@ enableRobotsTXT = true
     displayLogo = true
     width = "wide"
     [params.navbar.logo]
-      path = "/assets/img/logo/BensiLogo.png"
+      path = "images/logo.svg"
   
   # Search configuration
   [params.search]

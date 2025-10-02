@@ -1,7 +1,7 @@
+
 baseURL = "https://bensiegils.com/"
 languageCode = "en-us"
 title = "BensiEgils"
-theme = "hextra"
 
 # Enable rendering HTML
 [markup]

@@ -1,5 +1,5 @@
 # Hugo configuration for Hextra theme
-baseURL = "https://lubenz007.github.io/"
+baseURL = "https://lubenz007.github.io/bensiegils/"
 languageCode = "en-us"
 title = "BensiEgils"
 theme = "hextra"

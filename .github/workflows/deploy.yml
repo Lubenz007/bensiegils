@@ -45,14 +45,23 @@ jobs:
         with:
           go-version: '>=1.20.0'
 
+      - name: Cache Hugo modules
+        uses: actions/cache@v3
+        with:
+          path: /tmp/hugo_cache
+          key: ${{ runner.os }}-hugo-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugo-
+
       - name: Build with Hugo
         env:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
           HUGO_BASEURL: 'https://lubenz007.github.io/bensiegils/'
+          HUGO_MODULE_REPLACEMENTS: ""
         run: |
           hugo version
-          hugo mod get -u ./...
+          hugo mod tidy
           hugo --minify --logLevel info
 
       - name: Upload artifact

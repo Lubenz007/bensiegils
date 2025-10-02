@@ -3,6 +3,11 @@ languageCode = "en-us"
 title = "BensiEgils"
 theme = "hextra"
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
 [module]
 [[module.imports]]
   path = 'github.com/imfing/hextra'
@@ -13,3 +18,7 @@ theme = "hextra"
     name = "Blog"
     pageRef = "/posts"
     weight = 10
+
+# Suppress specific warnings
+ignoreErrors = ['error-remote-getjson']
+ignoreLogs = ['warning-goldmark-raw-html']

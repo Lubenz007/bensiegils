@@ -1,84 +1,53 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>BensiEgils – Powershell</title>
-    <link>http://localhost:1313/bensiegils/tags/powershell/</link>
-    <description>Recent content in Powershell on BensiEgils</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 06 Apr 2023 20:15:00 +0000</lastBuildDate>
-    
-	  <atom:link href="http://localhost:1313/bensiegils/tags/powershell/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Powershell Speedtest</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-04-06-speedtest/</link>
-      <pubDate>Thu, 06 Apr 2023 20:15:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-04-06-speedtest/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Monitor your internet connection performance with this PowerShell script that uses the Speedtest CLI and stores results in Azure Table Storage for historical analysis.&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Info:&lt;/strong&gt; The script uses the speedtest CLI from &lt;a href=&#34;https://www.speedtest.net/apps/cli&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.speedtest.net/apps/cli&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2&gt;Problem and Solution&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;problem-and-solution&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#problem-and-solution&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Was having problems with my internet connection and wanted to monitor it continuously. So I rewrote this script to use PowerShell and store the results in Azure Table Storage for tracking and analysis.&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$StorageAccountName = &amp;#34;StorageAcount&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$Key = &amp;#34;Storagekey&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$StorageContext = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $Key&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$Table = (Get-AzStorageTable -Context $StorageContext | Where-Object {$_.name -eq &amp;#34;Speedtest&amp;#34;}).CloudTable&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$applocation = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C:\apps\speedtest&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$path = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C:\temp\&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SpeedTestResults=@()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SpeedtestObj=@()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$i = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($i &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $PartitionKey = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SpeedTestResults = &amp;amp; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$($applocation)&lt;span style=&#34;color:#e6db74&#34;&gt;\speedtest.exe&amp;#34;&lt;/span&gt; --progress=no --format=json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SpeedtestResults = $SpeedTestResults | ConvertFrom-Json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SpeedtestObj += [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject&lt;/span&gt;] @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Time = Get-Date -Format &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;dd/MM/yyyy HH:mm K&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        downloadspeed = [&lt;span style=&#34;color:#66d9ef&#34;&gt;math&lt;/span&gt;]::Round($SpeedtestResults.download.bandwidth / &lt;span style=&#34;color:#ae81ff&#34;&gt;1000000&lt;/span&gt; * &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        uploadspeed   = [&lt;span style=&#34;color:#66d9ef&#34;&gt;math&lt;/span&gt;]::Round($SpeedtestResults.upload.bandwidth / &lt;span style=&#34;color:#ae81ff&#34;&gt;1000000&lt;/span&gt; * &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        packetloss    = ($($SpeedtestResults.packetLoss).ToString(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;P&amp;#34;&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        isp           = $SpeedtestResults.isp
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        ExternalIP    = $SpeedtestResults.interface.externalIp
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        InternalIP    = $SpeedtestResults.interface.internalIp
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        UsedServer    = $SpeedtestResults.server.host
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        location      = $SpeedTestResults.server.location
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Jitter        = [&lt;span style=&#34;color:#66d9ef&#34;&gt;math&lt;/span&gt;]::Round($SpeedtestResults.ping.jitter)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Latency       = [&lt;span style=&#34;color:#66d9ef&#34;&gt;math&lt;/span&gt;]::Round($SpeedtestResults.ping.latency)       
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# ---- Move to table storage ----&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# Add-AzTableRow -table $Table -PartitionKey $PartitionKey -RowKey (Get-Date).Ticks -property $SpeedtestObj&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Start-Sleep -Seconds &lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$SpeedtestObj | Format-Table | Out-String|ForEach-Object {Write-Host $_}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SpeedtestObj | Export-Csv -Path $path\speedtest.csv -NoTypeInformation&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BensiEgils – Powershell</title><link>https://lubenz007.github.io/bensiegils/tags/powershell/</link><description>Recent content in Powershell on BensiEgils</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 06 Apr 2023 20:15:00 +0000</lastBuildDate><atom:link href="https://lubenz007.github.io/bensiegils/tags/powershell/index.xml" rel="self" type="application/rss+xml"/><item><title>Powershell Speedtest</title><link>https://lubenz007.github.io/bensiegils/posts/2023-04-06-speedtest/</link><pubDate>Thu, 06 Apr 2023 20:15:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-04-06-speedtest/</guid><description>
+&lt;p>Monitor your internet connection performance with this PowerShell script that uses the Speedtest CLI and stores results in Azure Table Storage for historical analysis.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>Info:&lt;/strong> The script uses the speedtest CLI from &lt;a href="https://www.speedtest.net/apps/cli"target="_blank" rel="noopener">https://www.speedtest.net/apps/cli&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h2>Problem and Solution&lt;span class="hx:absolute hx:-mt-20" id="problem-and-solution">&lt;/span>
+&lt;a href="#problem-and-solution" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Was having problems with my internet connection and wanted to monitor it continuously. So I rewrote this script to use PowerShell and store the results in Azure Table Storage for tracking and analysis.&lt;/p>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$StorageAccountName = &amp;#34;StorageAcount&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$Key = &amp;#34;Storagekey&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$StorageContext = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $Key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$Table = (Get-AzStorageTable -Context $StorageContext | Where-Object {$_.name -eq &amp;#34;Speedtest&amp;#34;}).CloudTable&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$applocation = &lt;span style="color:#e6db74">&amp;#34;C:\apps\speedtest&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$path = &lt;span style="color:#e6db74">&amp;#34;C:\temp\&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SpeedTestResults=@()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SpeedtestObj=@()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$i = &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">while&lt;/span> ($i &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $PartitionKey = &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SpeedTestResults = &amp;amp; &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$($applocation)&lt;span style="color:#e6db74">\speedtest.exe&amp;#34;&lt;/span> --progress=no --format=json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SpeedtestResults = $SpeedTestResults | ConvertFrom-Json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SpeedtestObj += [&lt;span style="color:#66d9ef">PSCustomObject&lt;/span>] @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Time = Get-Date -Format &lt;span style="color:#e6db74">&amp;#34;dd/MM/yyyy HH:mm K&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> downloadspeed = [&lt;span style="color:#66d9ef">math&lt;/span>]::Round($SpeedtestResults.download.bandwidth / &lt;span style="color:#ae81ff">1000000&lt;/span> * &lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uploadspeed = [&lt;span style="color:#66d9ef">math&lt;/span>]::Round($SpeedtestResults.upload.bandwidth / &lt;span style="color:#ae81ff">1000000&lt;/span> * &lt;span style="color:#ae81ff">8&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> packetloss = ($($SpeedtestResults.packetLoss).ToString(&lt;span style="color:#e6db74">&amp;#34;P&amp;#34;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> isp = $SpeedtestResults.isp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ExternalIP = $SpeedtestResults.interface.externalIp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> InternalIP = $SpeedtestResults.interface.internalIp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UsedServer = $SpeedtestResults.server.host
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> location = $SpeedTestResults.server.location
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Jitter = [&lt;span style="color:#66d9ef">math&lt;/span>]::Round($SpeedtestResults.ping.jitter)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Latency = [&lt;span style="color:#66d9ef">math&lt;/span>]::Round($SpeedtestResults.ping.latency)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># ---- Move to table storage ----&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Add-AzTableRow -table $Table -PartitionKey $PartitionKey -RowKey (Get-Date).Ticks -property $SpeedtestObj&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Start-Sleep -Seconds &lt;span style="color:#ae81ff">15&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$SpeedtestObj | Format-Table | Out-String|ForEach-Object {Write-Host $_}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SpeedtestObj | Export-Csv -Path $path\speedtest.csv -NoTypeInformation&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div></description></item></channel></rss>

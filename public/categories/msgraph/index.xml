@@ -1,743 +1,646 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>BensiEgils – MsGraph</title>
-    <link>http://localhost:1313/bensiegils/categories/msgraph/</link>
-    <description>Recent content in MsGraph on BensiEgils</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Wed, 26 Apr 2023 23:00:49 +0000</lastBuildDate>
-    
-	  <atom:link href="http://localhost:1313/bensiegils/categories/msgraph/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Getting old guest accounts in Azure AD</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-04-26-old-guest-accounts/</link>
-      <pubDate>Wed, 26 Apr 2023 23:00:49 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-04-26-old-guest-accounts/</guid>
-      <description>
-        
-        
-        &lt;p&gt;This is a rewrite from &lt;a href=&#34;https://office365itpros.com/2019/10/15/report-old-guest-accounts/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; office365itpros.com
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BensiEgils – MsGraph</title><link>https://lubenz007.github.io/bensiegils/categories/msgraph/</link><description>Recent content in MsGraph on BensiEgils</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 26 Apr 2023 23:00:49 +0000</lastBuildDate><atom:link href="https://lubenz007.github.io/bensiegils/categories/msgraph/index.xml" rel="self" type="application/rss+xml"/><item><title>Getting old guest accounts in Azure AD</title><link>https://lubenz007.github.io/bensiegils/posts/2023-04-26-old-guest-accounts/</link><pubDate>Wed, 26 Apr 2023 23:00:49 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-04-26-old-guest-accounts/</guid><description>
+&lt;p>This is a rewrite from &lt;a href="https://office365itpros.com/2019/10/15/report-old-guest-accounts/"target="_blank" rel="noopener">here&lt;/a> office365itpros.com
 I have added some more properties to the report.
-And use msgraph instead of mggraph.&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Needs permission User.Read.All&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Connect to Graph #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Variable Collections #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;  = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$($ConnectGraph.access_token)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$token = $ConnectGraph.access_token
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#This request get users list with signInActivity.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$uri = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/users&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Result = @()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$Response = Get-GraphData -AccessToken $Token -Uri $uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Response) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Respons &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Response) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Result += New-Object PSObject -property $([&lt;span style=&#34;color:#66d9ef&#34;&gt;ordered&lt;/span&gt;]@{ 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      DisplayName = $Respons.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      UserPrincipalName = $Respons.userPrincipalName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      UsageLocation = $Respons.usageLocation
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      Contry = $Respons.country
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      LastSignInDateTime = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;($Respons.signInActivity.lastSignInDateTime) { [&lt;span style=&#34;color:#66d9ef&#34;&gt;DateTime&lt;/span&gt;]$Respons.signInActivity.lastSignInDateTime } &lt;span style=&#34;color:#66d9ef&#34;&gt;Else&lt;/span&gt; {$null}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      IsLicensed  = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Respons.assignedLicenses.Count &lt;span style=&#34;color:#f92672&#34;&gt;-ne&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) { $true } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { $false }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      IsGuestUser  = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Respons.userType &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Guest&amp;#39;&lt;/span&gt;) { $true } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { $false }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      })
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No User data found&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$GuestUsers = $Result | Where-Object{$_.IsGuestUser &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;TRUE&amp;#34;&lt;/span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$GuestAccountAge = &lt;span style=&#34;color:#ae81ff&#34;&gt;365&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$GuestUsers = $users.value -All $true -Filter &amp;#34;UserType eq &amp;#39;Guest&amp;#39;&amp;#34; | Sort DisplayName&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Today = (Get-Date); $StaleGuests = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Report = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Check each account and find those over 365 days old&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Guest &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $GuestUsers) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#66d9ef&#34;&gt;If&lt;/span&gt; ($AADAccountAge &lt;span style=&#34;color:#f92672&#34;&gt;-gt&lt;/span&gt; $GuestAccountAge) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $StaleGuests++
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#75715e&#34;&gt;#Write-Host &amp;#34;Processing&amp;#34; $Guest.DisplayName&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $i = &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; $GroupNames = $Null
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#75715e&#34;&gt;# Find what Microsoft 365 Groups the guest belongs to... if any&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $ReportLine = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject&lt;/span&gt;]@{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           UPN     = $Guest.UserPrincipalName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           Name    = $Guest.DisplayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           Age     = $AADAccountAge
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           Created = $Guest.RefreshTokensValidFromDateTime  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;           }      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;     $Report.Add($ReportLine) }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Output the report&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Report | Sort Age -Descending | Format-Table -AutoSize
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Found&amp;#34;&lt;/span&gt; $StaleGuests &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stale guest accounts.&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Apps Expiration Azure AD</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-04-07-apps-exp/</link>
-      <pubDate>Fri, 07 Apr 2023 10:34:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-04-07-apps-exp/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Monitor Azure AD application registrations for expiring certificates and secrets to prevent service disruptions. This script identifies expiring, expired, and apps with no expiration dates.&lt;/p&gt;
-&lt;h2&gt;Azure AD Application Expiration Monitoring&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;azure-ad-application-expiration-monitoring&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#azure-ad-application-expiration-monitoring&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This script will check all registered apps in Azure AD and will return the following information: expiring apps, expired apps, and apps with no expiration date.&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# needs permission Application.Read.All,Directory.Read.All&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$TenantName =
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Variable Collections #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$path = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C:\temp\&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$today = Get-Date
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;  = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$($ConnectGraph.access_token)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$token = $ConnectGraph.access_token
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#This request get application info&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$uri = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/applications/&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$apps = Get-GraphData -AccessToken $Token -Uri $uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$credentials = @()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($apps) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($app &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $apps) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $ApiUrl = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/applications/&amp;#34;&lt;/span&gt;+$app.id+&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/owners&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $owner = Invoke-WebRequest -Method GET -Uri $ApiUrl -ContentType &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt; -Headers $headers | ConvertFrom-Json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $app.KeyCredentials | foreach-object {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;#write-host $_.KeyId $_.DisplayName&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            $credentials += [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject&lt;/span&gt;] @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                CredentialType = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;KeyCredentials&amp;#34;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                DisplayName    = $app.DisplayName;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                AppId          = $app.AppId;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                ExpiryDate     = $_.EndDateTime;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                StartDate      = $_.StartDateTime;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#75715e&#34;&gt;#KeyID = $_.KeyId;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Type           = $_.Type;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Usage          = $_.Usage;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Owners         = $owner.value.userPrincipalName;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Expired        = (([&lt;span style=&#34;color:#66d9ef&#34;&gt;DateTime&lt;/span&gt;]$_.EndDateTime) &lt;span style=&#34;color:#f92672&#34;&gt;-lt&lt;/span&gt; $today) ? &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Yes&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No&amp;#34;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $app.PasswordCredentials | foreach-object {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;#write-host $_.KeyId $_.DisplayName&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            $credentials += [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject&lt;/span&gt;] @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                CredentialType = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;PasswordCredentials&amp;#34;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                DisplayName    = $app.DisplayName;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                AppId          = $app.AppId;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                ExpiryDate     = $_.EndDateTime;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                StartDate      = $_.StartDateTime;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#75715e&#34;&gt;#KeyID = $_.KeyId;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Type           = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;NA&amp;#39;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Usage          = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;NA&amp;#39;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Owners         = $owner.value.userPrincipalName;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                Expired        = (([&lt;span style=&#34;color:#66d9ef&#34;&gt;DateTime&lt;/span&gt;]$_.EndDateTime) &lt;span style=&#34;color:#f92672&#34;&gt;-lt&lt;/span&gt; $today) ? &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Yes&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No&amp;#34;&lt;/span&gt;;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$credentials | Export-Csv -Path $path\credentials.csv -NoTypeInformation
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#$credentials | Format-Table | Out-String|ForEach-Object {Write-Host $_}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Reference:&lt;/strong&gt; &lt;a href=&#34;https://pnp.github.io/script-samples/aad-apps-expired-keys/README.html?tabs=graphps&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://pnp.github.io/script-samples/aad-apps-expired-keys/README.html?tabs=graphps&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Getting licenses assigned to user accounts</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-01-04-license-report/</link>
-      <pubDate>Sat, 01 Apr 2023 00:27:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-01-04-license-report/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Create a detailed report of licenses assigned to Azure AD user accounts using the Microsoft Graph API. This is a rewrite that uses direct API calls instead of the MgGraph PowerShell module.&lt;/p&gt;
-&lt;h2&gt;License Reporting with Microsoft Graph API&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;license-reporting-with-microsoft-graph-api&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#license-reporting-with-microsoft-graph-api&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is a rewrite from &lt;a href=&#34;https://practical365.com/create-licensing-report-microsoft365-tenant/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;practical365.com&lt;/a&gt; - my mission was to rewrite the script to use the Microsoft Graph API instead of the MgGraph PowerShell module.&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Info:&lt;/strong&gt; This post shows how to get license reports from Microsoft Graph directly&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Connect to Graph #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Variable Collections #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$CSVOutputFile = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\Microsoft365LicensesReport.CSV&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$today = Get-Date
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;  = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$($ConnectGraph.access_token)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$token = $ConnectGraph.access_token
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#This request get SecureScore&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$Skus = Get-GraphData -AccessToken $Token -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/subscribedSkus&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[Array]$Skus = Get-MgSubscribedSku&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Generate CSV of all product SKUs used in tenant&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$Sku = $Skus | Select-Object SkuId, SkuPartNumber
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Generate list of all service plans used in SKUs in tenant&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Sk &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Skus) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($SP &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Sk.ServicePlans) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $SPLine = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            ServicePlanId          = $SP.ServicePlanId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            ServicePlanName        = $SP.ServicePlanName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            ServicePlanDisplayName = $SP.ServicePlanName 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $SPData.Add($SPLine)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SkuHashTable = @{}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Line &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Sku) { 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SkuHashTable.Add([&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Line.SkuId, [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Line.skuPartNumber) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ServicePlanHashTable = @{}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Line2 &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $SPData) { $ServicePlanHashTable.Add([&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Line2.ServicePlanId, [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Line2.ServicePlanDisplayName) }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Array&lt;/span&gt;]$Users = Get-GraphData -AccessToken $Token -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/users&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Report = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($User &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $users) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;If&lt;/span&gt; ([&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]::IsNullOrWhiteSpace($User.AssignedLicenses) &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; $true) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       &lt;span style=&#34;color:#75715e&#34;&gt;# Only process account if it has some licenses&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Processing&amp;#34;&lt;/span&gt; $User.DisplayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$LicenseInfo = $Null; [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$DisabledPlans = $Null
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       &lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($License &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $User.AssignedLicenses) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#66d9ef&#34;&gt;If&lt;/span&gt; ($SkuHashTable.ContainsKey($License.SkuId) &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; $True) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             &lt;span style=&#34;color:#75715e&#34;&gt;# We found a match in the SKU hash table&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             $LicenseInfo += $SkuHashTable.Item($License.SkuId) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#66d9ef&#34;&gt;Else&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             &lt;span style=&#34;color:#75715e&#34;&gt;# Nothing doing, so output the SkuID&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             $LicenseInfo += $License 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#75715e&#34;&gt;# Report any disabled service plans in licenses&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#66d9ef&#34;&gt;If&lt;/span&gt; ([&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]::IsNullOrWhiteSpace($License.DisabledPlans) &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; $False ) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             &lt;span style=&#34;color:#75715e&#34;&gt;# Check if disabled service plans in a license&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             &lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($DisabledPlan &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $License.DisabledPlans) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#75715e&#34;&gt;# Try and find what service plan is disabled&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;If&lt;/span&gt; ($ServicePlanHashTable.ContainsKey($DisabledPlan) &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; $True) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                   &lt;span style=&#34;color:#75715e&#34;&gt;# We found a match in the Service Plans hash table&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                   $DisabledPlans += $ServicePlanHashTable.Item($DisabledPlan) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;Else&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                   &lt;span style=&#34;color:#75715e&#34;&gt;# Nothing doing, so output the Service Plan ID&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                   $DisabledPlans += $DisabledPlan 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;             } &lt;span style=&#34;color:#75715e&#34;&gt;# End ForEach disabled plans&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          } &lt;span style=&#34;color:#75715e&#34;&gt;# End if check for disabled plans  &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       } &lt;span style=&#34;color:#75715e&#34;&gt;# End Foreach Licenses&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       &lt;span style=&#34;color:#75715e&#34;&gt;# Report information&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$DisabledPlans = $DisabledPlans -join &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;, &amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$LicenseInfo = $LicenseInfo -join (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;, &amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       $ReportLine = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          User             = $User.DisplayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          UPN              = $User.UserPrincipalName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          Country          = $User.Country
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          Department       = $User.Department
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          Title            = $User.JobTitle
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          Licenses         = $LicenseInfo
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Disabled Plans&amp;#34;&lt;/span&gt; = $DisabledPlans 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       Write-Host $ReportLine
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       $Report.Add($ReportLine)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#75715e&#34;&gt;#end If account is licensed&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;Else&lt;/span&gt; { $UnlicensedAccounts++ }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; } &lt;span style=&#34;color:#75715e&#34;&gt;# End ForEach Users&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; $Report | Export-CSV -NoTypeInformation $CSVOutputFile&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>MS Graph API - Get Secure Score for tenant</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-securescore/</link>
-      <pubDate>Sat, 25 Mar 2023 22:49:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-securescore/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Get your Microsoft 365 Secure Score using the Microsoft Graph API to monitor your tenant&amp;rsquo;s security posture and track improvements.&lt;/p&gt;
-&lt;h2&gt;Secure Score for O365 Tenant&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;secure-score-for-o365-tenant&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#secure-score-for-o365-tenant&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Getting the secure score for a tenant is a bit more complicated than getting the last logon time of a user. You only need to call the following endpoint: &lt;a href=&#34;https://graph.microsoft.com/beta/security/secureScores&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://graph.microsoft.com/beta/security/secureScores&lt;/a&gt; and divide the result by 100 to get the percentage.&lt;/p&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Needs permission SecurityEvents.Read.All&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Connect to Graph #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Variable Collections #&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$path = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C:\temp\&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;  = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$($ConnectGraph.access_token)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$token = $ConnectGraph.access_token
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#This request get SecureScore&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$uri = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/security/secureScores&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Result = @()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$Response = Get-GraphData -AccessToken $Token -Uri $uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($Response) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($Respons &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Response) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $SecureScore = $Respons.currentScore / $Respons.maxScore * &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      $Result += New-Object PSObject -property $([&lt;span style=&#34;color:#66d9ef&#34;&gt;ordered&lt;/span&gt;]@{ 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          CreatedDateTime   = $Respons.createdDateTime
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          CurrentScore      = $Respons.currentScore
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          MaxScore          = $Respons.maxScore
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          LicensedUserCount = $Respons.licensedUserCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          ActiveUserCount   = $Respons.activeUserCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          SecureScore       = [&lt;span style=&#34;color:#66d9ef&#34;&gt;math&lt;/span&gt;]::Round($SecureScore, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        })
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Write-Host &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;No SecureScore data found&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# export to csv&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Result | export-csv -path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$path&lt;span style=&#34;color:#e6db74&#34;&gt;\SecureScore.csv&amp;#34;&lt;/span&gt; -NoTypeInformation&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Getting Started with MSGraph API</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-api/</link>
-      <pubDate>Sat, 25 Mar 2023 13:49:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-api/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Microsoft Graph API is a powerful tool for authentication and authorization that allows developers to access Microsoft services and data securely. Learn how to integrate with Outlook, OneDrive, Office 365, Azure Active Directory, and more.&lt;/p&gt;
-&lt;h2&gt;Authentication and Authorization&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;authentication-and-authorization&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#authentication-and-authorization&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;MSGraph API provides a secure way to authenticate users, authorize applications, and manage user data. With MSGraph API, developers can easily integrate their applications with Microsoft services like Outlook, OneDrive, Office 365, Azure Active Directory, and more.&lt;/p&gt;
-&lt;h2&gt;Authentication&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;authentication&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#authentication&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;We will use the Azure CLI to create a service principal and get the app id and secret. We will also use the Azure CLI to view all the API permissions available in Microsoft Graph.&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;we-will-use-the-azure-cli-to-create-a-service-principal-and-get-the-app-id-and-secret-we-will-also-use-the-azure-cli-to-view-all-the-api-permissions-available-in-microsoft-graph&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#we-will-use-the-azure-cli-to-create-a-service-principal-and-get-the-app-id-and-secret-we-will-also-use-the-azure-cli-to-view-all-the-api-permissions-available-in-microsoft-graph&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h3&gt;&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Info:&lt;/strong&gt; Get the Azure CLI from &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# login to Azure&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az login
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#View All API Permissions Microsoft Graph to see what is available&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Permissions = az ad sp list --filter &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;appId eq &amp;#39;00000003-0000-0000-c000-000000000000&amp;#39;&amp;#34;&lt;/span&gt; | ConvertFrom-Json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#to see all permissions&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Permissions.appRoles | Select-Object -Property value,allowedMemberTypes,description
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get select permission from list above and id to use in next command&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Permissions.appRoles | Select-Object -Property value,allowedMemberTypes,id,description | Where-Object {$_.value &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User.Read.All&amp;#34;&lt;/span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Create service principal&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app create --display-name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Alit-GraphAPI&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Graph API App ID: from output &amp;#34;appId&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Reset app secret to get new secret&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app credential reset --id &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Graph API App Secret: from output&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# &amp;#34;appId&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#  &amp;#34;password&amp;#34;: &amp;#34;3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b&amp;#34;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#  &amp;#34;tenant&amp;#34;: &amp;#34;5eeb8561-5493-4b39-906f-038356850aaa&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# set secret to 3 years&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#az ad app credential reset --id 13d15b6f-94ad-4df4-a88d-72f355e5f92d --years 3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Add Microsoft Graph application permission user.read.all # Guide https://learn.microsoft.com/en-us/cli/azure/ad/app/permission?view=azure-cli-latest&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app permission add --id d52bda31-bd71-4a17-b563-7921a17d79e7 --api &lt;span style=&#34;color:#ae81ff&#34;&gt;00000003&lt;/span&gt;-&lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt;-&lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt;-c000-&lt;span style=&#34;color:#ae81ff&#34;&gt;000000000000&lt;/span&gt; --api-permissions df021288-bdef-&lt;span style=&#34;color:#ae81ff&#34;&gt;4463&lt;/span&gt;-88db-98f22de89214=Role
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Grant admin consent #this needs to be done by a Cloud Application Administrator&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app permission admin-consent --id d52bda31-bd71-4a17-b563-7921a17d79e7
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get app id &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app list --query &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;[?displayName==&amp;#39;Alit-GraphAPI&amp;#39;].{id:appId,secret:passwordCredentials[0].value}&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    &amp;#34;id&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    &amp;#34;secret&amp;#34;: null&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#  }&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#get app api permissions&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;az ad app permission list --id d52bda31-bd71-4a17-b563-7921a17d79e7 --output json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#   &amp;#34;resourceAccess&amp;#34;: [&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#     {&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#       &amp;#34;id&amp;#34;: &amp;#34;df021288-bdef-4463-88db-98f22de89214&amp;#34;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#       &amp;#34;type&amp;#34;: &amp;#34;Role&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#     }&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#   ],&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#   &amp;#34;resourceAppId&amp;#34;: &amp;#34;00000003-0000-0000-c000-000000000000&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# }&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;p&gt;Reference:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.nielskok.tech/azure-ad/view-all-api-permissions-microsoft-graph/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;nielskok.tech&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how-to-create-service-principal-portal&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-authenticate-service-principal-cli&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how-to-authenticate-service-principal-cli&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.c-sharpcorner.com/article/how-to-add-app-roles-in-azure-ad-apps/&#34;target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how to-add-app-roles-in-azure-ad-apps&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>MS Graph API - Get User info</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-users/</link>
-      <pubDate>Sat, 25 Mar 2023 13:49:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-users/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Microsoft Graph API can be used to get comprehensive user information including the last logon time. This guide shows how to query user data including DisplayName, UserPrincipalName, UsageLocation, Country, LastSignInDateTime, IsLicensed, and IsGuestUser.&lt;/p&gt;
-&lt;h2&gt;What This Query Retrieves&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;what-this-query-retrieves&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#what-this-query-retrieves&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;DisplayName, UserPrincipalName, UsageLocation, Country&lt;/li&gt;
-&lt;li&gt;LastSignInDateTime, IsLicensed, IsGuestUser&lt;/li&gt;
-&lt;li&gt;Complete user activity and licensing information&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#client_id and client_secret are generated in Azure AD&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Create the body of the request.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;} 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get the access token.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get the access token.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$token = $ConnectGraph.access_token
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Variable Collections #  &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Result = @()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#This request get users list with signInActivity.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Uri = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://graph.microsoft.com/beta/users?&lt;/span&gt;$select&lt;span style=&#34;color:#e6db74&#34;&gt;=displayName,userPrincipalName,contry,UsageLocation,userType,assignedLicenses,signInActivity,lastSignInDateTime&amp;amp;&lt;/span&gt;$top&lt;span style=&#34;color:#e6db74&#34;&gt;=999&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#function to get graph data with pagination&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get the users.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$Users = Get-GraphData -AccessToken $Token -Uri $uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Loop through the results and add them to the output array.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($User &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $Users) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Result += New-Object PSObject -property $([&lt;span style=&#34;color:#66d9ef&#34;&gt;ordered&lt;/span&gt;]@{ 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            DisplayName        = $User.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            UserPrincipalName  = $User.userPrincipalName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            UsageLocation      = $user.usageLocation
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Contry             = $User.country
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            LastSignInDateTime = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($User.signInActivity.lastSignInDateTime) { [&lt;span style=&#34;color:#66d9ef&#34;&gt;DateTime&lt;/span&gt;]$User.signInActivity.lastSignInDateTime } &lt;span style=&#34;color:#66d9ef&#34;&gt;Else&lt;/span&gt; { $null }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            IsLicensed         = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($User.assignedLicenses.Count &lt;span style=&#34;color:#f92672&#34;&gt;-ne&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) { $true } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { $false }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            IsGuestUser        = &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ($User.userType &lt;span style=&#34;color:#f92672&#34;&gt;-eq&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Guest&amp;#39;&lt;/span&gt;) { $true } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; { $false }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        })
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Write the results to a CSV file.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Logfile = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;lastlogon.csv&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$LogItem = New-Item -ItemType File -Name $Logfile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Result | ConvertTo-Csv | Out-File $LogItem -Append&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+And use msgraph instead of mggraph.&lt;/p>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Needs permission User.Read.All&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Connect to Graph #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resource = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Variable Collections #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Content-Type&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$($ConnectGraph.access_token)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$token = $ConnectGraph.access_token
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#This request get users list with signInActivity.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$uri = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/users&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Result = @()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$Response = Get-GraphData -AccessToken $Token -Uri $uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> ($Response) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">ForEach&lt;/span> ($Respons &lt;span style="color:#66d9ef">in&lt;/span> $Response) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Result += New-Object PSObject -property $([&lt;span style="color:#66d9ef">ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> DisplayName = $Respons.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UserPrincipalName = $Respons.userPrincipalName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UsageLocation = $Respons.usageLocation
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Contry = $Respons.country
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LastSignInDateTime = &lt;span style="color:#66d9ef">if&lt;/span>($Respons.signInActivity.lastSignInDateTime) { [&lt;span style="color:#66d9ef">DateTime&lt;/span>]$Respons.signInActivity.lastSignInDateTime } &lt;span style="color:#66d9ef">Else&lt;/span> {$null}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IsLicensed = &lt;span style="color:#66d9ef">if&lt;/span> ($Respons.assignedLicenses.Count &lt;span style="color:#f92672">-ne&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) { $true } &lt;span style="color:#66d9ef">else&lt;/span> { $false }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IsGuestUser = &lt;span style="color:#66d9ef">if&lt;/span> ($Respons.userType &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Guest&amp;#39;&lt;/span>) { $true } &lt;span style="color:#66d9ef">else&lt;/span> { $false }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Write-Host &lt;span style="color:#e6db74">&amp;#34;No User data found&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$GuestUsers = $Result | Where-Object{$_.IsGuestUser &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#34;TRUE&amp;#34;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$GuestAccountAge = &lt;span style="color:#ae81ff">365&lt;/span> &lt;span style="color:#75715e"># Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$GuestUsers = $users.value -All $true -Filter &amp;#34;UserType eq &amp;#39;Guest&amp;#39;&amp;#34; | Sort DisplayName&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Today = (Get-Date); $StaleGuests = &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Report = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Check each account and find those over 365 days old&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($Guest &lt;span style="color:#66d9ef">in&lt;/span> $GuestUsers) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">If&lt;/span> ($AADAccountAge &lt;span style="color:#f92672">-gt&lt;/span> $GuestAccountAge) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $StaleGuests++
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#Write-Host &amp;#34;Processing&amp;#34; $Guest.DisplayName&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $i = &lt;span style="color:#ae81ff">0&lt;/span>; $GroupNames = $Null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Find what Microsoft 365 Groups the guest belongs to... if any&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $ReportLine = [&lt;span style="color:#66d9ef">PSCustomObject&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UPN = $Guest.UserPrincipalName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Name = $Guest.DisplayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Age = $AADAccountAge
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Created = $Guest.RefreshTokensValidFromDateTime
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Report.Add($ReportLine) }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Output the report&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Report | Sort Age -Descending | Format-Table -AutoSize
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Write-Host &lt;span style="color:#e6db74">&amp;#34;Found&amp;#34;&lt;/span> $StaleGuests &lt;span style="color:#e6db74">&amp;#34;stale guest accounts.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div></description></item><item><title>Apps Expiration Azure AD</title><link>https://lubenz007.github.io/bensiegils/posts/2023-04-07-apps-exp/</link><pubDate>Fri, 07 Apr 2023 10:34:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-04-07-apps-exp/</guid><description>
+&lt;p>Monitor Azure AD application registrations for expiring certificates and secrets to prevent service disruptions. This script identifies expiring, expired, and apps with no expiration dates.&lt;/p>
+&lt;h2>Azure AD Application Expiration Monitoring&lt;span class="hx:absolute hx:-mt-20" id="azure-ad-application-expiration-monitoring">&lt;/span>
+&lt;a href="#azure-ad-application-expiration-monitoring" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>This script will check all registered apps in Azure AD and will return the following information: expiring apps, expired apps, and apps with no expiration date.&lt;/p>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># needs permission Application.Read.All,Directory.Read.All&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$TenantName =
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resource = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Variable Collections #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$path = &lt;span style="color:#e6db74">&amp;#34;C:\temp\&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$today = Get-Date
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Content-Type&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$($ConnectGraph.access_token)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$token = $ConnectGraph.access_token
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#This request get application info&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$uri = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/applications/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$apps = Get-GraphData -AccessToken $Token -Uri $uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$credentials = @()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> ($apps) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">foreach&lt;/span> ($app &lt;span style="color:#66d9ef">in&lt;/span> $apps) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $ApiUrl = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/applications/&amp;#34;&lt;/span>+$app.id+&lt;span style="color:#e6db74">&amp;#34;/owners&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $owner = Invoke-WebRequest -Method GET -Uri $ApiUrl -ContentType &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span> -Headers $headers | ConvertFrom-Json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $app.KeyCredentials | foreach-object {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#write-host $_.KeyId $_.DisplayName&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $credentials += [&lt;span style="color:#66d9ef">PSCustomObject&lt;/span>] @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CredentialType = &lt;span style="color:#e6db74">&amp;#34;KeyCredentials&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> DisplayName = $app.DisplayName;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AppId = $app.AppId;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ExpiryDate = $_.EndDateTime;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> StartDate = $_.StartDateTime;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#KeyID = $_.KeyId;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Type = $_.Type;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Usage = $_.Usage;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Owners = $owner.value.userPrincipalName;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Expired = (([&lt;span style="color:#66d9ef">DateTime&lt;/span>]$_.EndDateTime) &lt;span style="color:#f92672">-lt&lt;/span> $today) ? &lt;span style="color:#e6db74">&amp;#34;Yes&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;No&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $app.PasswordCredentials | foreach-object {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#write-host $_.KeyId $_.DisplayName&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $credentials += [&lt;span style="color:#66d9ef">PSCustomObject&lt;/span>] @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CredentialType = &lt;span style="color:#e6db74">&amp;#34;PasswordCredentials&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> DisplayName = $app.DisplayName;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AppId = $app.AppId;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ExpiryDate = $_.EndDateTime;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> StartDate = $_.StartDateTime;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#KeyID = $_.KeyId;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Type = &lt;span style="color:#e6db74">&amp;#39;NA&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Usage = &lt;span style="color:#e6db74">&amp;#39;NA&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Owners = $owner.value.userPrincipalName;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Expired = (([&lt;span style="color:#66d9ef">DateTime&lt;/span>]$_.EndDateTime) &lt;span style="color:#f92672">-lt&lt;/span> $today) ? &lt;span style="color:#e6db74">&amp;#34;Yes&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;No&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$credentials | Export-Csv -Path $path\credentials.csv -NoTypeInformation
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#$credentials | Format-Table | Out-String|ForEach-Object {Write-Host $_}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;blockquote>
+&lt;p>&lt;strong>Reference:&lt;/strong> &lt;a href="https://pnp.github.io/script-samples/aad-apps-expired-keys/README.html?tabs=graphps"target="_blank" rel="noopener">https://pnp.github.io/script-samples/aad-apps-expired-keys/README.html?tabs=graphps&lt;/a>&lt;/p>
+&lt;/blockquote></description></item><item><title>Getting licenses assigned to user accounts</title><link>https://lubenz007.github.io/bensiegils/posts/2023-01-04-license-report/</link><pubDate>Sat, 01 Apr 2023 00:27:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-01-04-license-report/</guid><description>
+&lt;p>Create a detailed report of licenses assigned to Azure AD user accounts using the Microsoft Graph API. This is a rewrite that uses direct API calls instead of the MgGraph PowerShell module.&lt;/p>
+&lt;h2>License Reporting with Microsoft Graph API&lt;span class="hx:absolute hx:-mt-20" id="license-reporting-with-microsoft-graph-api">&lt;/span>
+&lt;a href="#license-reporting-with-microsoft-graph-api" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>This is a rewrite from &lt;a href="https://practical365.com/create-licensing-report-microsoft365-tenant/"target="_blank" rel="noopener">practical365.com&lt;/a> - my mission was to rewrite the script to use the Microsoft Graph API instead of the MgGraph PowerShell module.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>Info:&lt;/strong> This post shows how to get license reports from Microsoft Graph directly&lt;/p>
+&lt;/blockquote>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Connect to Graph #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resource = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Variable Collections #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$CSVOutputFile = &lt;span style="color:#e6db74">&amp;#34;c:\temp\Microsoft365LicensesReport.CSV&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$today = Get-Date
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Content-Type&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$($ConnectGraph.access_token)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$token = $ConnectGraph.access_token
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#This request get SecureScore&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$Skus = Get-GraphData -AccessToken $Token -Uri &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/subscribedSkus&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Array]$Skus = Get-MgSubscribedSku&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Generate CSV of all product SKUs used in tenant&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$Sku = $Skus | Select-Object SkuId, SkuPartNumber
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Generate list of all service plans used in SKUs in tenant&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($Sk &lt;span style="color:#66d9ef">in&lt;/span> $Skus) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">ForEach&lt;/span> ($SP &lt;span style="color:#66d9ef">in&lt;/span> $Sk.ServicePlans) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPLine = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ServicePlanId = $SP.ServicePlanId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ServicePlanName = $SP.ServicePlanName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ServicePlanDisplayName = $SP.ServicePlanName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPData.Add($SPLine)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SkuHashTable = @{}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($Line &lt;span style="color:#66d9ef">in&lt;/span> $Sku) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SkuHashTable.Add([&lt;span style="color:#66d9ef">string&lt;/span>]$Line.SkuId, [&lt;span style="color:#66d9ef">string&lt;/span>]$Line.skuPartNumber)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ServicePlanHashTable = @{}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($Line2 &lt;span style="color:#66d9ef">in&lt;/span> $SPData) { $ServicePlanHashTable.Add([&lt;span style="color:#66d9ef">string&lt;/span>]$Line2.ServicePlanId, [&lt;span style="color:#66d9ef">string&lt;/span>]$Line2.ServicePlanDisplayName) }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Array&lt;/span>]$Users = Get-GraphData -AccessToken $Token -Uri &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/users&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Report = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($User &lt;span style="color:#66d9ef">in&lt;/span> $users) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">If&lt;/span> ([&lt;span style="color:#66d9ef">string&lt;/span>]::IsNullOrWhiteSpace($User.AssignedLicenses) &lt;span style="color:#f92672">-eq&lt;/span> $true) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Only process account if it has some licenses&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Write-Host &lt;span style="color:#e6db74">&amp;#34;Processing&amp;#34;&lt;/span> $User.DisplayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$LicenseInfo = $Null; [&lt;span style="color:#66d9ef">array&lt;/span>]$DisabledPlans = $Null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">ForEach&lt;/span> ($License &lt;span style="color:#66d9ef">in&lt;/span> $User.AssignedLicenses) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">If&lt;/span> ($SkuHashTable.ContainsKey($License.SkuId) &lt;span style="color:#f92672">-eq&lt;/span> $True) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># We found a match in the SKU hash table&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $LicenseInfo += $SkuHashTable.Item($License.SkuId)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">Else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Nothing doing, so output the SkuID&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $LicenseInfo += $License
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Report any disabled service plans in licenses&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">If&lt;/span> ([&lt;span style="color:#66d9ef">string&lt;/span>]::IsNullOrWhiteSpace($License.DisabledPlans) &lt;span style="color:#f92672">-eq&lt;/span> $False ) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Check if disabled service plans in a license&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">ForEach&lt;/span> ($DisabledPlan &lt;span style="color:#66d9ef">in&lt;/span> $License.DisabledPlans) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Try and find what service plan is disabled&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">If&lt;/span> ($ServicePlanHashTable.ContainsKey($DisabledPlan) &lt;span style="color:#f92672">-eq&lt;/span> $True) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># We found a match in the Service Plans hash table&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $DisabledPlans += $ServicePlanHashTable.Item($DisabledPlan)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">Else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Nothing doing, so output the Service Plan ID&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $DisabledPlans += $DisabledPlan
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#75715e"># End ForEach disabled plans&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#75715e"># End if check for disabled plans &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#75715e"># End Foreach Licenses&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Report information&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$DisabledPlans = $DisabledPlans -join &lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$LicenseInfo = $LicenseInfo -join (&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $ReportLine = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> User = $User.DisplayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UPN = $User.UserPrincipalName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Country = $User.Country
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Department = $User.Department
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Title = $User.JobTitle
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Licenses = $LicenseInfo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;Disabled Plans&amp;#34;&lt;/span> = $DisabledPlans
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Write-Host $ReportLine
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Report.Add($ReportLine)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#75715e">#end If account is licensed&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">Else&lt;/span> { $UnlicensedAccounts++ }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#75715e"># End ForEach Users&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Report | Export-CSV -NoTypeInformation $CSVOutputFile&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div></description></item><item><title>MS Graph API - Get Secure Score for tenant</title><link>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-securescore/</link><pubDate>Sat, 25 Mar 2023 22:49:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-securescore/</guid><description>
+&lt;p>Get your Microsoft 365 Secure Score using the Microsoft Graph API to monitor your tenant&amp;rsquo;s security posture and track improvements.&lt;/p>
+&lt;h2>Secure Score for O365 Tenant&lt;span class="hx:absolute hx:-mt-20" id="secure-score-for-o365-tenant">&lt;/span>
+&lt;a href="#secure-score-for-o365-tenant" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Getting the secure score for a tenant is a bit more complicated than getting the last logon time of a user. You only need to call the following endpoint: &lt;a href="https://graph.microsoft.com/beta/security/secureScores"target="_blank" rel="noopener">https://graph.microsoft.com/beta/security/secureScores&lt;/a> and divide the result by 100 to get the percentage.&lt;/p>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Needs permission SecurityEvents.Read.All&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Connect to Graph #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resource = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Variable Collections #&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$path = &lt;span style="color:#e6db74">&amp;#34;C:\temp\&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Content-Type&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$($ConnectGraph.access_token)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$token = $ConnectGraph.access_token
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#This request get SecureScore&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$uri = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/security/secureScores&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Result = @()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$Response = Get-GraphData -AccessToken $Token -Uri $uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> ($Response) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">ForEach&lt;/span> ($Respons &lt;span style="color:#66d9ef">in&lt;/span> $Response) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SecureScore = $Respons.currentScore / $Respons.maxScore * &lt;span style="color:#ae81ff">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Result += New-Object PSObject -property $([&lt;span style="color:#66d9ef">ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CreatedDateTime = $Respons.createdDateTime
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CurrentScore = $Respons.currentScore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> MaxScore = $Respons.maxScore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LicensedUserCount = $Respons.licensedUserCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ActiveUserCount = $Respons.activeUserCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> SecureScore = [&lt;span style="color:#66d9ef">math&lt;/span>]::Round($SecureScore, &lt;span style="color:#ae81ff">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Write-Host &lt;span style="color:#e6db74">&amp;#34;No SecureScore data found&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># export to csv&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Result | export-csv -path &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$path&lt;span style="color:#e6db74">\SecureScore.csv&amp;#34;&lt;/span> -NoTypeInformation&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div></description></item><item><title>Getting Started with MSGraph API</title><link>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-api/</link><pubDate>Sat, 25 Mar 2023 13:49:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-api/</guid><description>
+&lt;p>Microsoft Graph API is a powerful tool for authentication and authorization that allows developers to access Microsoft services and data securely. Learn how to integrate with Outlook, OneDrive, Office 365, Azure Active Directory, and more.&lt;/p>
+&lt;h2>Authentication and Authorization&lt;span class="hx:absolute hx:-mt-20" id="authentication-and-authorization">&lt;/span>
+&lt;a href="#authentication-and-authorization" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>MSGraph API provides a secure way to authenticate users, authorize applications, and manage user data. With MSGraph API, developers can easily integrate their applications with Microsoft services like Outlook, OneDrive, Office 365, Azure Active Directory, and more.&lt;/p>
+&lt;h2>Authentication&lt;span class="hx:absolute hx:-mt-20" id="authentication">&lt;/span>
+&lt;a href="#authentication" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;h3>We will use the Azure CLI to create a service principal and get the app id and secret. We will also use the Azure CLI to view all the API permissions available in Microsoft Graph.&lt;span class="hx:absolute hx:-mt-20" id="we-will-use-the-azure-cli-to-create-a-service-principal-and-get-the-app-id-and-secret-we-will-also-use-the-azure-cli-to-view-all-the-api-permissions-available-in-microsoft-graph">&lt;/span>
+&lt;a href="#we-will-use-the-azure-cli-to-create-a-service-principal-and-get-the-app-id-and-secret-we-will-also-use-the-azure-cli-to-view-all-the-api-permissions-available-in-microsoft-graph" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;blockquote>
+&lt;p>&lt;strong>Info:&lt;/strong> Get the Azure CLI from &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest"target="_blank" rel="noopener">here&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># login to Azure&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az login
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#View All API Permissions Microsoft Graph to see what is available&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Permissions = az ad sp list --filter &lt;span style="color:#e6db74">&amp;#34;appId eq &amp;#39;00000003-0000-0000-c000-000000000000&amp;#39;&amp;#34;&lt;/span> | ConvertFrom-Json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#to see all permissions&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Permissions.appRoles | Select-Object -Property value,allowedMemberTypes,description
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get select permission from list above and id to use in next command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Permissions.appRoles | Select-Object -Property value,allowedMemberTypes,id,description | Where-Object {$_.value &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#34;User.Read.All&amp;#34;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Create service principal&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app create --display-name &lt;span style="color:#e6db74">&amp;#34;Alit-GraphAPI&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Graph API App ID: from output &amp;#34;appId&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Reset app secret to get new secret&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app credential reset --id &lt;span style="color:#e6db74">&amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Graph API App Secret: from output&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># &amp;#34;appId&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># &amp;#34;password&amp;#34;: &amp;#34;3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b&amp;#34;,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># &amp;#34;tenant&amp;#34;: &amp;#34;5eeb8561-5493-4b39-906f-038356850aaa&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># set secret to 3 years&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#az ad app credential reset --id 13d15b6f-94ad-4df4-a88d-72f355e5f92d --years 3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Add Microsoft Graph application permission user.read.all # Guide https://learn.microsoft.com/en-us/cli/azure/ad/app/permission?view=azure-cli-latest&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app permission add --id d52bda31-bd71-4a17-b563-7921a17d79e7 --api &lt;span style="color:#ae81ff">00000003&lt;/span>-&lt;span style="color:#ae81ff">0000&lt;/span>-&lt;span style="color:#ae81ff">0000&lt;/span>-c000-&lt;span style="color:#ae81ff">000000000000&lt;/span> --api-permissions df021288-bdef-&lt;span style="color:#ae81ff">4463&lt;/span>-88db-98f22de89214=Role
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Grant admin consent #this needs to be done by a Cloud Application Administrator&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app permission admin-consent --id d52bda31-bd71-4a17-b563-7921a17d79e7
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get app id &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app list --query &lt;span style="color:#e6db74">&amp;#34;[?displayName==&amp;#39;Alit-GraphAPI&amp;#39;].{id:appId,secret:passwordCredentials[0].value}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># &amp;#34;id&amp;#34;: &amp;#34;d52bda31-bd71-4a17-b563-7921a17d79e7&amp;#34;,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># &amp;#34;secret&amp;#34;: null&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># }&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#get app api permissions&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>az ad app permission list --id d52bda31-bd71-4a17-b563-7921a17d79e7 --output json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># &amp;#34;resourceAccess&amp;#34;: [&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># &amp;#34;id&amp;#34;: &amp;#34;df021288-bdef-4463-88db-98f22de89214&amp;#34;,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># &amp;#34;type&amp;#34;: &amp;#34;Role&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># }&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># ],&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># &amp;#34;resourceAppId&amp;#34;: &amp;#34;00000003-0000-0000-c000-000000000000&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># }&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>Reference:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.nielskok.tech/azure-ad/view-all-api-permissions-microsoft-graph/"target="_blank" rel="noopener">nielskok.tech&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal"target="_blank" rel="noopener">how-to-create-service-principal-portal&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-authenticate-service-principal-cli"target="_blank" rel="noopener">how-to-authenticate-service-principal-cli&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.c-sharpcorner.com/article/how-to-add-app-roles-in-azure-ad-apps/"target="_blank" rel="noopener">how to-add-app-roles-in-azure-ad-apps&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>MS Graph API - Get User info</title><link>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-users/</link><pubDate>Sat, 25 Mar 2023 13:49:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-03-23-sgraph-users/</guid><description>
+&lt;p>Microsoft Graph API can be used to get comprehensive user information including the last logon time. This guide shows how to query user data including DisplayName, UserPrincipalName, UsageLocation, Country, LastSignInDateTime, IsLicensed, and IsGuestUser.&lt;/p>
+&lt;h2>What This Query Retrieves&lt;span class="hx:absolute hx:-mt-20" id="what-this-query-retrieves">&lt;/span>
+&lt;a href="#what-this-query-retrieves" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;ul>
+&lt;li>DisplayName, UserPrincipalName, UsageLocation, Country&lt;/li>
+&lt;li>LastSignInDateTime, IsLicensed, IsGuestUser&lt;/li>
+&lt;li>Complete user activity and licensing information&lt;/li>
+&lt;/ul>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#client_id and client_secret are generated in Azure AD&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Create the body of the request.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resource = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get the access token.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get the access token.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$token = $ConnectGraph.access_token
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Variable Collections # &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Result = @()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#This request get users list with signInActivity.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Uri = &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/beta/users?&lt;/span>$select&lt;span style="color:#e6db74">=displayName,userPrincipalName,contry,UsageLocation,userType,assignedLicenses,signInActivity,lastSignInDateTime&amp;amp;&lt;/span>$top&lt;span style="color:#e6db74">=999&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#function to get graph data with pagination&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get the users.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">array&lt;/span>]$Users = Get-GraphData -AccessToken $Token -Uri $uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Loop through the results and add them to the output array.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($User &lt;span style="color:#66d9ef">in&lt;/span> $Users) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Result += New-Object PSObject -property $([&lt;span style="color:#66d9ef">ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> DisplayName = $User.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UserPrincipalName = $User.userPrincipalName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UsageLocation = $user.usageLocation
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Contry = $User.country
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LastSignInDateTime = &lt;span style="color:#66d9ef">if&lt;/span> ($User.signInActivity.lastSignInDateTime) { [&lt;span style="color:#66d9ef">DateTime&lt;/span>]$User.signInActivity.lastSignInDateTime } &lt;span style="color:#66d9ef">Else&lt;/span> { $null }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IsLicensed = &lt;span style="color:#66d9ef">if&lt;/span> ($User.assignedLicenses.Count &lt;span style="color:#f92672">-ne&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) { $true } &lt;span style="color:#66d9ef">else&lt;/span> { $false }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IsGuestUser = &lt;span style="color:#66d9ef">if&lt;/span> ($User.userType &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Guest&amp;#39;&lt;/span>) { $true } &lt;span style="color:#66d9ef">else&lt;/span> { $false }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Write the results to a CSV file.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Logfile = &lt;span style="color:#e6db74">&amp;#34;lastlogon.csv&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$LogItem = New-Item -ItemType File -Name $Logfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Result | ConvertTo-Csv | Out-File $LogItem -Append&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div></description></item></channel></rss>

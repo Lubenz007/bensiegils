@@ -1,153 +1,121 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>BensiEgils – Monitor</title>
-    <link>http://localhost:1313/bensiegils/categories/monitor/</link>
-    <description>Recent content in Monitor on BensiEgils</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 15 Oct 2023 02:00:00 +0000</lastBuildDate>
-    
-	  <atom:link href="http://localhost:1313/bensiegils/categories/monitor/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Arc - Diskspace Monitoring - Teams)</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-10-15-outofdiskspace-teams/</link>
-      <pubDate>Sun, 15 Oct 2023 02:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-10-15-outofdiskspace-teams/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Monitor disk space usage on Azure Arc-enabled servers and receive instant Microsoft Teams notifications when space is running low.&lt;/p&gt;
-&lt;h2&gt;Azure Arc Disk Space Monitoring&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;azure-arc-disk-space-monitoring&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#azure-arc-disk-space-monitoring&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Upon successfully installing Azure Arc on your Server and activating Insights, you open the door to a powerful monitoring capability. One essential aspect is overseeing disk space usage on your server, ensuring optimal performance and preventing potential issues. This example provides a step-by-step guide on how to set up disk space monitoring and receive instant notifications via Microsoft Teams when space is running low.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Furthermore, this versatile approach can be extended to send email alerts, providing an additional layer of flexibility in how you manage critical resource thresholds. This comprehensive monitoring strategy empowers you with the tools to proactively maintain your server&amp;rsquo;s health and responsiveness, bolstering the reliability of your operations.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The query below is a simple example of how to monitor disk space usage on your server. It returns the percentage of free space on the C: drive, which is then used to trigger an alert when the threshold is exceeded. The query can be customized to monitor other drives on your server, and the threshold can be adjusted to suit your needs.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;InsightsMetrics 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| where Name == &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;FreeSpaceMB&amp;#34;&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| summarize arg_max(TimeGenerated, *) by Tags, Computer 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| extend Drive = tostring(parse_json(Tags)[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;vm.azm.ms/mountId&amp;#34;&lt;/span&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| extend Size = toreal(parse_json(Tags)[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;vm.azm.ms/diskSizeMB&amp;#34;&lt;/span&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| project TimeGenerated, Computer, Drive, bin(SizeGB = Size / &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;), bin(FreeGB = Val / &lt;span style=&#34;color:#ae81ff&#34;&gt;1024&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| join kind=inner (InsightsMetrics 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; | where Name == &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;FreeSpacePercentage&amp;#34;&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; | summarize arg_max(TimeGenerated, *) by Tags, Computer 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; | extend Drive = tostring(parse_json(Tags)[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;vm.azm.ms/mountId&amp;#34;&lt;/span&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; | project TimeGenerated, Computer, Drive, bin(FreePercent = Val, &lt;span style=&#34;color:#ae81ff&#34;&gt;1.1&lt;/span&gt;))on Computer, Drive 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| project TimeGenerated, Computer, Drive, SizeGB, FreeGB, FreePercent 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| where FreePercent &amp;lt;= &lt;span style=&#34;color:#ae81ff&#34;&gt;90.0&lt;/span&gt; //
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;//| where FreeGB &amp;lt;= &lt;span style=&#34;color:#ae81ff&#34;&gt;10.0&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;| order by Computer asc&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;We need to enable webhooks in Microsoft Teams and copy the webhook URL. Finally, we need to create Azure automation runbook and configure it to send notifications to the channel.
-We also need to enable the Azure Automation account to access the Log Analytics workspace. To do this, we need to give automation account read access to the Log Analytics workspace and resource group where the arc servers are located.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;the runbook code is the following:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# So we are going to use the same query as in Azure Monitor to get the results and send it to Teams&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# Connect to Azure for Log Analytics&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Connect-AzAccount -Identity
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$context = Set-AzContext -Subscription &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Your Subscription Name&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$workspaceName = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;arc-servers&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$workspaceRG = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;arc-servers&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$WorkspaceID = (Get-AzOperationalInsightsWorkspace -Name $workspaceName -ResourceGroupName $workspaceRG).CustomerID
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$query = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;InsightsMetrics
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| where Name == &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;FreeSpaceMB&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| summarize arg_max(TimeGenerated, *) by Tags, Computer 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| extend Drive = tostring(parse_json(Tags)[&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;vm.azm.ms/mountId&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| extend Size = toreal(parse_json(Tags)[&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;vm.azm.ms/diskSizeMB&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| project TimeGenerated, Computer, Drive, bin(SizeGB = Size / 1024, 0.1), bin(FreeGB = Val / 1024, 1) 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| join kind=inner (InsightsMetrics 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | where Name == &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;FreeSpacePercentage&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | summarize arg_max(TimeGenerated, *) by Tags, Computer 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | extend Drive = tostring(parse_json(Tags)[&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;vm.azm.ms/mountId&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;`&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;]) 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | project TimeGenerated, Computer, Drive, bin(FreePercent = Val, 1.1))on Computer, Drive 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| project TimeGenerated, Computer, Drive, SizeGB, FreeGB, FreePercent 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| where FreePercent &amp;lt;= 90.0 //
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;//| where FreeGB &amp;lt;= 10.0 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;| order by Computer asc&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$kqlQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $WorkspaceID -Query $query
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$webhookUri = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;your webhook url&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# Define the message as a PowerShell object&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$message = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    context   = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://schema.org/extensions&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    type      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;MessageCard&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    themeColor = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;d70000&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    title      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Machine with low disk space&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    text = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$($kqlQuery.results | Format-List | Out-String)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Convert the message to JSON&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$jsonMessage = $message | ConvertTo-Json
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Send the message using Invoke-RestMethod&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Invoke-RestMethod -Method Post -ContentType &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;application/json&amp;#39;&lt;/span&gt; -Body $jsonMessage -Uri $webhookUri&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Select create alert rule
-&lt;img src=&#34;http://localhost:1313/bensiegils/assets/img/blog/AzureMonitor.png&#34; alt=&#34;Desktop View&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create a new alert rule
-&lt;img src=&#34;http://localhost:1313/bensiegils/assets/img/blog/Create_an_alert_rule.png&#34; alt=&#34;Desktop View&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create action group
-&lt;img src=&#34;http://localhost:1313/bensiegils/assets/img/blog/Action_Group.png&#34; alt=&#34;Desktop View&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select the runbook with teams notification that we create before&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;the result in teams
-&lt;img src=&#34;http://localhost:1313/bensiegils/assets/img/blog/diskalert_teams.png&#34; alt=&#34;Desktop View&#34;  loading=&#34;lazy&#34; /&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BensiEgils – Monitor</title><link>https://lubenz007.github.io/bensiegils/categories/monitor/</link><description>Recent content in Monitor on BensiEgils</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 15 Oct 2023 02:00:00 +0000</lastBuildDate><atom:link href="https://lubenz007.github.io/bensiegils/categories/monitor/index.xml" rel="self" type="application/rss+xml"/><item><title>Arc - Diskspace Monitoring - Teams)</title><link>https://lubenz007.github.io/bensiegils/posts/2023-10-15-outofdiskspace-teams/</link><pubDate>Sun, 15 Oct 2023 02:00:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-10-15-outofdiskspace-teams/</guid><description>
+&lt;p>Monitor disk space usage on Azure Arc-enabled servers and receive instant Microsoft Teams notifications when space is running low.&lt;/p>
+&lt;h2>Azure Arc Disk Space Monitoring&lt;span class="hx:absolute hx:-mt-20" id="azure-arc-disk-space-monitoring">&lt;/span>
+&lt;a href="#azure-arc-disk-space-monitoring" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Upon successfully installing Azure Arc on your Server and activating Insights, you open the door to a powerful monitoring capability. One essential aspect is overseeing disk space usage on your server, ensuring optimal performance and preventing potential issues. This example provides a step-by-step guide on how to set up disk space monitoring and receive instant notifications via Microsoft Teams when space is running low.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Furthermore, this versatile approach can be extended to send email alerts, providing an additional layer of flexibility in how you manage critical resource thresholds. This comprehensive monitoring strategy empowers you with the tools to proactively maintain your server&amp;rsquo;s health and responsiveness, bolstering the reliability of your operations.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The query below is a simple example of how to monitor disk space usage on your server. It returns the percentage of free space on the C: drive, which is then used to trigger an alert when the threshold is exceeded. The query can be customized to monitor other drives on your server, and the threshold can be adjusted to suit your needs.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>InsightsMetrics
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| where Name == &lt;span style="color:#e6db74">&amp;#34;FreeSpaceMB&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| summarize arg_max(TimeGenerated, *) by Tags, Computer
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| extend Drive = tostring(parse_json(Tags)[&lt;span style="color:#e6db74">&amp;#34;vm.azm.ms/mountId&amp;#34;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| extend Size = toreal(parse_json(Tags)[&lt;span style="color:#e6db74">&amp;#34;vm.azm.ms/diskSizeMB&amp;#34;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| project TimeGenerated, Computer, Drive, bin(SizeGB = Size / &lt;span style="color:#ae81ff">1024&lt;/span>, &lt;span style="color:#ae81ff">0.1&lt;/span>), bin(FreeGB = Val / &lt;span style="color:#ae81ff">1024&lt;/span>, &lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| join kind=inner (InsightsMetrics
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | where Name == &lt;span style="color:#e6db74">&amp;#34;FreeSpacePercentage&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | summarize arg_max(TimeGenerated, *) by Tags, Computer
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | extend Drive = tostring(parse_json(Tags)[&lt;span style="color:#e6db74">&amp;#34;vm.azm.ms/mountId&amp;#34;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | project TimeGenerated, Computer, Drive, bin(FreePercent = Val, &lt;span style="color:#ae81ff">1.1&lt;/span>))on Computer, Drive
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| project TimeGenerated, Computer, Drive, SizeGB, FreeGB, FreePercent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| where FreePercent &amp;lt;= &lt;span style="color:#ae81ff">90.0&lt;/span> //
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>//| where FreeGB &amp;lt;= &lt;span style="color:#ae81ff">10.0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| order by Computer asc&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;ul>
+&lt;li>
+&lt;p>We need to enable webhooks in Microsoft Teams and copy the webhook URL. Finally, we need to create Azure automation runbook and configure it to send notifications to the channel.
+We also need to enable the Azure Automation account to access the Log Analytics workspace. To do this, we need to give automation account read access to the Log Analytics workspace and resource group where the arc servers are located.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>the runbook code is the following:&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># So we are going to use the same query as in Azure Monitor to get the results and send it to Teams&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Connect to Azure for Log Analytics&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Connect-AzAccount -Identity
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$context = Set-AzContext -Subscription &lt;span style="color:#e6db74">&amp;#34;Your Subscription Name&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$workspaceName = &lt;span style="color:#e6db74">&amp;#34;arc-servers&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$workspaceRG = &lt;span style="color:#e6db74">&amp;#34;arc-servers&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$WorkspaceID = (Get-AzOperationalInsightsWorkspace -Name $workspaceName -ResourceGroupName $workspaceRG).CustomerID
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$query = &lt;span style="color:#e6db74">&amp;#34;InsightsMetrics
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| where Name == &lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">FreeSpaceMB&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| summarize arg_max(TimeGenerated, *) by Tags, Computer
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| extend Drive = tostring(parse_json(Tags)[&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">vm.azm.ms/mountId&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">])
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| extend Size = toreal(parse_json(Tags)[&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">vm.azm.ms/diskSizeMB&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">])
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| project TimeGenerated, Computer, Drive, bin(SizeGB = Size / 1024, 0.1), bin(FreeGB = Val / 1024, 1)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| join kind=inner (InsightsMetrics
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> | where Name == &lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">FreeSpacePercentage&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> | summarize arg_max(TimeGenerated, *) by Tags, Computer
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> | extend Drive = tostring(parse_json(Tags)[&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">vm.azm.ms/mountId&lt;/span>&lt;span style="color:#ae81ff">`&amp;#34;&lt;/span>&lt;span style="color:#e6db74">])
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> | project TimeGenerated, Computer, Drive, bin(FreePercent = Val, 1.1))on Computer, Drive
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| project TimeGenerated, Computer, Drive, SizeGB, FreeGB, FreePercent
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| where FreePercent &amp;lt;= 90.0 //
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">//| where FreeGB &amp;lt;= 10.0
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">| order by Computer asc&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$kqlQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $WorkspaceID -Query $query
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$webhookUri = &lt;span style="color:#e6db74">&amp;#34;your webhook url&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Define the message as a PowerShell object&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$message = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> context = &lt;span style="color:#e6db74">&amp;#34;http://schema.org/extensions&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> type = &lt;span style="color:#e6db74">&amp;#34;MessageCard&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> themeColor = &lt;span style="color:#e6db74">&amp;#34;d70000&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title = &lt;span style="color:#e6db74">&amp;#34;Machine with low disk space&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text = &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$($kqlQuery.results | Format-List | Out-String)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Convert the message to JSON&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$jsonMessage = $message | ConvertTo-Json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Send the message using Invoke-RestMethod&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Invoke-RestMethod -Method Post -ContentType &lt;span style="color:#e6db74">&amp;#39;application/json&amp;#39;&lt;/span> -Body $jsonMessage -Uri $webhookUri&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;ul>
+&lt;li>
+&lt;p>Select create alert rule
+&lt;img src="https://lubenz007.github.io/bensiegils/assets/img/blog/AzureMonitor.png" alt="Desktop View" loading="lazy" />&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create a new alert rule
+&lt;img src="https://lubenz007.github.io/bensiegils/assets/img/blog/Create_an_alert_rule.png" alt="Desktop View" loading="lazy" />&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create action group
+&lt;img src="https://lubenz007.github.io/bensiegils/assets/img/blog/Action_Group.png" alt="Desktop View" loading="lazy" />&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Select the runbook with teams notification that we create before&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>the result in teams
+&lt;img src="https://lubenz007.github.io/bensiegils/assets/img/blog/diskalert_teams.png" alt="Desktop View" loading="lazy" />&lt;/p>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

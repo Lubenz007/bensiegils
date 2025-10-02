@@ -1,259 +1,228 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>BensiEgils – Security</title>
-    <link>http://localhost:1313/bensiegils/tags/security/</link>
-    <description>Recent content in Security on BensiEgils</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 28 May 2023 14:00:00 +0000</lastBuildDate>
-    
-	  <atom:link href="http://localhost:1313/bensiegils/tags/security/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Get Azure Defender for Cloud score Via API</title>
-      <link>http://localhost:1313/bensiegils/posts/2023-05-28-defendercloudesecurescore-/</link>
-      <pubDate>Sun, 28 May 2023 14:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/bensiegils/posts/2023-05-28-defendercloudesecurescore-/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Create detailed reports of Azure Defender for Cloud security scores using API calls and export them to CSV format for sharing and progress tracking.&lt;/p&gt;
-&lt;h2&gt;Azure Defender Security Score Reporting&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;azure-defender-security-score-reporting&#34;&gt;&lt;/span&gt;
-    &lt;a href=&#34;#azure-defender-security-score-reporting&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;How to build a report of Azure Defender for Cloud score via API, and export it to CSV. Why do we need this? Share it with your stakeholders and show them the progress of your security posture.&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Info:&lt;/strong&gt; Need to create service principal with the following permissions: Read RBAC on each subscription.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&#34;hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code&#34;&gt;
-
-&lt;div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#set the variables&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientID = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ClientSecret = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$tenant_Id = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# your subscription Ids&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$subscription_Ids = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Create the body of the request.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Body = @{    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Grant_Type    = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client_credentials&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Resource      = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_id     = $clientId
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    client_secret = $clientSecret
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ConnectGraph = Invoke-RestMethod -Uri &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://login.microsoft.com/&lt;/span&gt;$tenant_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth2/token?api-version=1.0&amp;#34;&lt;/span&gt; -Method POST -Body $Body
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type&amp;#39;&lt;/span&gt;  = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$($ConnectGraph.access_token)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Force TLS 1.2.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.ServicePointManager&lt;/span&gt;]::SecurityProtocol = [&lt;span style=&#34;color:#66d9ef&#34;&gt;Net.SecurityProtocolType&lt;/span&gt;]::Tls12
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#function to get graph data with pagination&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;function&lt;/span&gt; Get-GraphData {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$AccessToken,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [parameter(&lt;span style=&#34;color:#a6e22e&#34;&gt;Mandatory&lt;/span&gt;)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]$Uri
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $Headers = @{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Authorization&amp;#39;&lt;/span&gt; = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer &lt;/span&gt;$AccessToken&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $QueryResults += $Results.value
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        $Uri = $Results.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;@odata.nextLink&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; ($Uri)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; $QueryResults
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get the data&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($subscription_Id &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $subscription_Ids) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $uri1 = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/subscriptions/&lt;/span&gt;$subscription_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/providers/Microsoft.Security/secureScores?api-version=2020-01-01&amp;#34;&lt;/span&gt;    
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$secureScores = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri1
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $uri2 = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/subscriptions/&lt;/span&gt;$subscription_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/providers/Microsoft.Security/secureScores/ascScore/securescorecontrols?api-version=2020-01-01&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$ascScores = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri2
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $uri3 = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/subscriptions/&lt;/span&gt;$subscription_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/providers/Microsoft.Security/secureScoreControlDefinitions?api-version=2020-01-01&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$secureScoreControlDefinitions = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri3
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $uri4 = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/subscriptions/&lt;/span&gt;$subscription_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/providers/Microsoft.Security/assessments?api-version=2020-01-01&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$assessments = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri4
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $uri5 = &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://management.azure.com/subscriptions/&lt;/span&gt;$subscription_Id&lt;span style=&#34;color:#e6db74&#34;&gt;/providers/Microsoft.Security/secureScores/ascScore/securescorecontrols?api-version=2020-01-01&amp;amp;expand=definition&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    [&lt;span style=&#34;color:#66d9ef&#34;&gt;array&lt;/span&gt;]$securescorecontrols = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri5
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Create the report&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ReportLineScore = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    MaxScore   = $secureScores.Properties.score.max
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Current    = $secureScores.Properties.score.current
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    percentage = $secureScores.Properties.score.percentage * &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ForEach&lt;/span&gt; ($ascScore &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $ascScores) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPLine = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Name          = $ascScore.properties.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Healthy       = $ascScore.properties.healthyResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        UnHealthy     = $ascScore.properties.unhealthyResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        NotApplicable = $ascScore.properties.notApplicableResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        weight        = $ascScore.properties.weight
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        maxScore      = $ascScore.properties.score.max
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        currentScore  = $ascScore.properties.score.current
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        percentage    = $ascScore.properties.score.percentage * &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPData.Add($SPLine)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData1 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($secureScoreControlDefinition &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $secureScoreControlDefinitions) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPLine1 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Name     = $secureScoreControlDefinition.properties.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        MaxScore = $secureScoreControlDefinition.properties.maxScore
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPData1.Add($SPLine1)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData2 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($assessment &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $assessments) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPLine2 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Name     = $assessment.properties.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Status   = $assessment.properties.status.description
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Code     = $assessment.properties.status.code
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Cause    = $assessment.properties.status.cause
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Details  = $assessment.properties.resourceDetails.Id
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPData2.Add($SPLine2)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData3 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;System.Collections.Generic.List[Object]&lt;/span&gt;]::new()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;foreach&lt;/span&gt; ($securescorecontrol &lt;span style=&#34;color:#66d9ef&#34;&gt;in&lt;/span&gt; $securescorecontrols) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPLine3 = [&lt;span style=&#34;color:#66d9ef&#34;&gt;PSCustomObject][Ordered&lt;/span&gt;]@{  
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Name               = $securescorecontrol.properties.displayName
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        HealthyCount       = $securescorecontrol.properties.healthyResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        UnHealthyCount     = $securescorecontrol.properties.unhealthyResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        NotApplicableCount = $securescorecontrol.properties.notApplicableResourceCount
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    $SPData3.Add($SPLine3)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ReportLineScore | Export-Csv -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\ReportLineScore.csv&amp;#34;&lt;/span&gt; -NoTypeInformation -Encoding UTF8
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData | Export-Csv -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\SPData.csv&amp;#34;&lt;/span&gt; -NoTypeInformation -Encoding UTF8
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData1 | Export-Csv -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\SPData1.csv&amp;#34;&lt;/span&gt; -NoTypeInformation -Encoding UTF8
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData2 | Export-Csv -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\SPData2.csv&amp;#34;&lt;/span&gt; -NoTypeInformation -Encoding UTF8
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$SPData3 | Export-Csv -Path &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c:\temp\SPData3.csv&amp;#34;&lt;/span&gt; -NoTypeInformation -Encoding UTF8&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&#34;hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0&#34;&gt;
-  &lt;button
-    class=&#34;hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50&#34;
-    title=&#34;Copy code&#34;
-  &gt;
-    &lt;div class=&#34;hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-&lt;div class=&#34;hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4&#34;&gt;&lt;/div&gt;
-  &lt;/button&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;MaxScore&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;Current&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;percentage&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;31&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;24&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;77,42&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;Name&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;MaxScore&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Protect applications against DDoS attacks&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;2&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Enable MFA&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;10&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Encrypt data in transit&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Restrict unauthorized network access&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Implement security best practices&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Apply adaptive application control&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;3&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Enable auditing and logging&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Enable encryption at rest&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Enable endpoint protection&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;2&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Apply system updates&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;6&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Manage access and permissions&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Remediate security configurations&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Secure management ports&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;8&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Remediate vulnerabilities&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;6&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Enable enhanced security features&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BensiEgils – Security</title><link>https://lubenz007.github.io/bensiegils/tags/security/</link><description>Recent content in Security on BensiEgils</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 28 May 2023 14:00:00 +0000</lastBuildDate><atom:link href="https://lubenz007.github.io/bensiegils/tags/security/index.xml" rel="self" type="application/rss+xml"/><item><title>Get Azure Defender for Cloud score Via API</title><link>https://lubenz007.github.io/bensiegils/posts/2023-05-28-defendercloudesecurescore-/</link><pubDate>Sun, 28 May 2023 14:00:00 +0000</pubDate><guid>https://lubenz007.github.io/bensiegils/posts/2023-05-28-defendercloudesecurescore-/</guid><description>
+&lt;p>Create detailed reports of Azure Defender for Cloud security scores using API calls and export them to CSV format for sharing and progress tracking.&lt;/p>
+&lt;h2>Azure Defender Security Score Reporting&lt;span class="hx:absolute hx:-mt-20" id="azure-defender-security-score-reporting">&lt;/span>
+&lt;a href="#azure-defender-security-score-reporting" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>How to build a report of Azure Defender for Cloud score via API, and export it to CSV. Why do we need this? Share it with your stakeholders and show them the progress of your security posture.&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>Info:&lt;/strong> Need to create service principal with the following permissions: Read RBAC on each subscription.&lt;/p>
+&lt;/blockquote>
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#set the variables&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientID = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ClientSecret = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$tenant_Id = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># your subscription Ids&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$subscription_Ids = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Create the body of the request.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Body = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Grant_Type = &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Resource = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_id = $clientId
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client_secret = $clientSecret
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ConnectGraph = Invoke-RestMethod -Uri &lt;span style="color:#e6db74">&amp;#34;https://login.microsoft.com/&lt;/span>$tenant_Id&lt;span style="color:#e6db74">/oauth2/token?api-version=1.0&amp;#34;&lt;/span> -Method POST -Body $Body
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Content-Type&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$($ConnectGraph.access_token)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Force TLS 1.2.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#66d9ef">Net.ServicePointManager&lt;/span>]::SecurityProtocol = [&lt;span style="color:#66d9ef">Net.SecurityProtocolType&lt;/span>]::Tls12
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#function to get graph data with pagination&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> Get-GraphData {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">param&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$AccessToken,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [parameter(&lt;span style="color:#a6e22e">Mandatory&lt;/span>)]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">string&lt;/span>]$Uri
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Headers = @{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Authorization&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Bearer &lt;/span>$AccessToken&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $QueryResults += $Results.value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $Uri = $Results.&lt;span style="color:#e6db74">&amp;#39;@odata.nextLink&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">while&lt;/span> ($Uri)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> $QueryResults
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get the data&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">foreach&lt;/span> ($subscription_Id &lt;span style="color:#66d9ef">in&lt;/span> $subscription_Ids) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $uri1 = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/&lt;/span>$subscription_Id&lt;span style="color:#e6db74">/providers/Microsoft.Security/secureScores?api-version=2020-01-01&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$secureScores = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $uri2 = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/&lt;/span>$subscription_Id&lt;span style="color:#e6db74">/providers/Microsoft.Security/secureScores/ascScore/securescorecontrols?api-version=2020-01-01&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$ascScores = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $uri3 = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/&lt;/span>$subscription_Id&lt;span style="color:#e6db74">/providers/Microsoft.Security/secureScoreControlDefinitions?api-version=2020-01-01&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$secureScoreControlDefinitions = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $uri4 = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/&lt;/span>$subscription_Id&lt;span style="color:#e6db74">/providers/Microsoft.Security/assessments?api-version=2020-01-01&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$assessments = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $uri5 = &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/&lt;/span>$subscription_Id&lt;span style="color:#e6db74">/providers/Microsoft.Security/secureScores/ascScore/securescorecontrols?api-version=2020-01-01&amp;amp;expand=definition&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#66d9ef">array&lt;/span>]$securescorecontrols = Get-GraphData -AccessToken $ConnectGraph.access_token -Uri $uri5
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Create the report&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ReportLineScore = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> MaxScore = $secureScores.Properties.score.max
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Current = $secureScores.Properties.score.current
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> percentage = $secureScores.Properties.score.percentage * &lt;span style="color:#ae81ff">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ForEach&lt;/span> ($ascScore &lt;span style="color:#66d9ef">in&lt;/span> $ascScores) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPLine = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Name = $ascScore.properties.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Healthy = $ascScore.properties.healthyResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UnHealthy = $ascScore.properties.unhealthyResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NotApplicable = $ascScore.properties.notApplicableResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> weight = $ascScore.properties.weight
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> maxScore = $ascScore.properties.score.max
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> currentScore = $ascScore.properties.score.current
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> percentage = $ascScore.properties.score.percentage * &lt;span style="color:#ae81ff">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPData.Add($SPLine)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData1 = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">foreach&lt;/span> ($secureScoreControlDefinition &lt;span style="color:#66d9ef">in&lt;/span> $secureScoreControlDefinitions) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPLine1 = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Name = $secureScoreControlDefinition.properties.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> MaxScore = $secureScoreControlDefinition.properties.maxScore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPData1.Add($SPLine1)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData2 = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">foreach&lt;/span> ($assessment &lt;span style="color:#66d9ef">in&lt;/span> $assessments) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPLine2 = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Name = $assessment.properties.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Status = $assessment.properties.status.description
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Code = $assessment.properties.status.code
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cause = $assessment.properties.status.cause
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Details = $assessment.properties.resourceDetails.Id
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPData2.Add($SPLine2)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData3 = [&lt;span style="color:#66d9ef">System.Collections.Generic.List[Object]&lt;/span>]::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">foreach&lt;/span> ($securescorecontrol &lt;span style="color:#66d9ef">in&lt;/span> $securescorecontrols) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPLine3 = [&lt;span style="color:#66d9ef">PSCustomObject][Ordered&lt;/span>]@{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Name = $securescorecontrol.properties.displayName
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> HealthyCount = $securescorecontrol.properties.healthyResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UnHealthyCount = $securescorecontrol.properties.unhealthyResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NotApplicableCount = $securescorecontrol.properties.notApplicableResourceCount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $SPData3.Add($SPLine3)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ReportLineScore | Export-Csv -Path &lt;span style="color:#e6db74">&amp;#34;c:\temp\ReportLineScore.csv&amp;#34;&lt;/span> -NoTypeInformation -Encoding UTF8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData | Export-Csv -Path &lt;span style="color:#e6db74">&amp;#34;c:\temp\SPData.csv&amp;#34;&lt;/span> -NoTypeInformation -Encoding UTF8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData1 | Export-Csv -Path &lt;span style="color:#e6db74">&amp;#34;c:\temp\SPData1.csv&amp;#34;&lt;/span> -NoTypeInformation -Encoding UTF8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData2 | Export-Csv -Path &lt;span style="color:#e6db74">&amp;#34;c:\temp\SPData2.csv&amp;#34;&lt;/span> -NoTypeInformation -Encoding UTF8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$SPData3 | Export-Csv -Path &lt;span style="color:#e6db74">&amp;#34;c:\temp\SPData3.csv&amp;#34;&lt;/span> -NoTypeInformation -Encoding UTF8&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+>
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align: left">MaxScore&lt;/th>
+&lt;th style="text-align: left">Current&lt;/th>
+&lt;th style="text-align: left">percentage&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align: left">31&lt;/td>
+&lt;td style="text-align: left">24&lt;/td>
+&lt;td style="text-align: left">77,42&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align: left">Name&lt;/th>
+&lt;th style="text-align: left">MaxScore&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align: left">Protect applications against DDoS attacks&lt;/td>
+&lt;td style="text-align: left">2&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Enable MFA&lt;/td>
+&lt;td style="text-align: left">10&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Encrypt data in transit&lt;/td>
+&lt;td style="text-align: left">4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Restrict unauthorized network access&lt;/td>
+&lt;td style="text-align: left">4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Implement security best practices&lt;/td>
+&lt;td style="text-align: left">0&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Apply adaptive application control&lt;/td>
+&lt;td style="text-align: left">3&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Enable auditing and logging&lt;/td>
+&lt;td style="text-align: left">1&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Enable encryption at rest&lt;/td>
+&lt;td style="text-align: left">4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Enable endpoint protection&lt;/td>
+&lt;td style="text-align: left">2&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Apply system updates&lt;/td>
+&lt;td style="text-align: left">6&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Manage access and permissions&lt;/td>
+&lt;td style="text-align: left">4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Remediate security configurations&lt;/td>
+&lt;td style="text-align: left">4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Secure management ports&lt;/td>
+&lt;td style="text-align: left">8&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Remediate vulnerabilities&lt;/td>
+&lt;td style="text-align: left">6&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align: left">Enable enhanced security features&lt;/td>
+&lt;td style="text-align: left">0&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item></channel></rss>

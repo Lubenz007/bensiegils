@@ -31,6 +31,9 @@ jobs:
         id: pages
         uses: actions/configure-pages@v4
 
+      - name: Download Hugo Modules
+        run: hugo mod tidy
+
       - name: Build with Hugo
         env:
           HUGO_BASEURL: 'https://lubenz007.github.io/bensiegils/'

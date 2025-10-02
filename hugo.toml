@@ -1,74 +1,18 @@
-# Hugo configuration for Hextra theme
 baseURL = "https://lubenz007.github.io/bensiegils/"
 languageCode = "en-us"
 title = "BensiEgils"
 theme = "hextra"
 
-# Enable emoji in markdown
 enableEmoji = true
-# Enable Git info
 enableGitInfo = true
-# Enable robots.txt generation
 enableRobotsTXT = true
 
-# Asset handling
-[security.exec]
-  allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^git$']
-
-[security.funcs]
-  getenv = ['^HUGO_']
-
 [security.http]
-  methods = ['(?i)GET|POST']
   urls = ['.*']
 
 [module]
 [[module.imports]]
   path = 'github.com/imfing/hextra'
-
-# Pagination configuration
-[pagination]
-  pagerSize = 50
-
-[params]
-  description = "Documenting my journey with Azure, PowerShell, and automation"
-  keywords = ["blog", "azure", "powershell", "automation", "security", "hextra"]
-  
-  # Theme configuration
-  [params.theme]
-    default = "system"      # light | dark | system
-    displayToggle = true    # Show theme toggle button
-  
-  # Navbar configuration
-  [params.navbar]
-    displayTitle = true
-    displayLogo = true
-    width = "wide"
-    [params.navbar.logo]
-      path = "images/logo.svg"
-  
-  # Search configuration
-  [params.search]
-    enable = true
-    type = "flexsearch"
-  
-  # Display settings
-  displayUpdatedDate = true
-  dateFormat = "January 2, 2006"
-  
-  # Blog configuration for Hextra theme
-  [params.blog]
-    [params.blog.list]
-      displayTags = true
-      pagerSize = 50
-      sortBy = "date"
-      sortOrder = "desc"
-  
-  # Footer
-  [params.footer]
-    enable = true
-    displayCopyright = true
-    displayPoweredBy = true
 
 [menu]
   [[menu.main]]
@@ -76,28 +20,6 @@ enableRobotsTXT = true
     name = "Blog"
     pageRef = "/posts"
     weight = 10
-
-  [[menu.main]]
-    identifier = "about"
-    name = "About"
-    pageRef = "/about"
-    weight = 20
-
-  [[menu.main]]
-    identifier = "categories"
-    name = "Categories"
-    pageRef = "/categories"
-    weight = 30
-
-  [[menu.main]]
-    identifier = "tags"
-    name = "Tags"
-    pageRef = "/tags"
-    weight = 40
-
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
       unsafe = true
   [markup.highlight]
     lineNos = true

@@ -11,7 +11,7 @@
     <loc>http://localhost:1313/bensiegils/categories/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/migrating-from-vmware-to-azure-using-azure-files/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2025-08-19-move-vmware-azure/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/tags/</loc>
@@ -26,10 +26,10 @@
     <loc>http://localhost:1313/bensiegils/tags/esp32/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/gspro-control-box/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2024-06-23-gspro-controlbox/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/arc-diskspace-monitoring-teams/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-10-15-outofdiskspace-teams/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/monitor/</loc>
@@ -38,19 +38,19 @@
     <loc>http://localhost:1313/bensiegils/tags/monitor/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/azure-arc-azure-cli-ssh-rdp/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-10-08-azurearc-ssh/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/hyper-v/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/hyper-v-tool/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-09-30-hyper-v-tool/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/tags/hyperv/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/get-azure-defender-for-cloud-score-via-api/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-05-28-defendercloudesecurescore-/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/security/</loc>
@@ -59,10 +59,10 @@
     <loc>http://localhost:1313/bensiegils/tags/security/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/monitor-azure-usage-for-a-subscription/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-05-17-azureusageresource/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/monitor-azure-usage-with-github-actions/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-05-13-azureusage/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/usage/</loc>
@@ -71,7 +71,7 @@
     <loc>http://localhost:1313/bensiegils/tags/usage/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/three-great-tools-for-azure/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-05-10-three-tool/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/tools/</loc>
@@ -80,10 +80,10 @@
     <loc>http://localhost:1313/bensiegils/tags/tools/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/azure-cost-cli/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-05-03-azure-cost-cli/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/getting-old-guest-accounts-in-azure-ad/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-26-old-guest-accounts/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/tags/msgraph/</loc>
@@ -92,7 +92,7 @@
     <loc>http://localhost:1313/bensiegils/categories/msgraph/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/getting-started-with-terraform-and-azure/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-22-aztfexport/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/categories/terraform/</loc>
@@ -101,31 +101,31 @@
     <loc>http://localhost:1313/bensiegils/tags/terraform/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/apps-expiration-azure-ad/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-07-apps-exp/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/tags/powershell/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/powershell-speedtest/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-06-speedtest/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/esp32-hot-tub-controller/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-04-hottub/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/upgrade-hyper-v-hosts-with-azure-arc/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-04-04-upgrade-hyper/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/getting-licenses-assigned-to-user-accounts/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-01-04-license-report/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/ms-graph-api-get-secure-score-for-tenant/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-securescore/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/getting-started-with-msgraph-api/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-api/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/bensiegils/posts/ms-graph-api-get-user-info/</loc>
+    <loc>http://localhost:1313/bensiegils/posts/2023-03-23-sgraph-users/</loc>
     <lastmod>2025-09-28T18:19:45+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/bensiegils/about/</loc>

@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="en" dir="ltr"><head><script src="/bensiegils/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=bensiegils/livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="robots" content="noindex, nofollow" />
+  <link rel="icon shortcut" href="/bensiegils/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/bensiegils/favicon.svg" type="image/svg+xml" id="favicon-svg" />
+<link rel="icon" href="/bensiegils/favicon-16x16.png" type="image/png" sizes="16x16" />
+<link rel="icon" href="/bensiegils/favicon-32x32.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="/bensiegils/apple-touch-icon.png" sizes="180x180" />
+<link fetchpriority="low" href="/bensiegils/site.webmanifest" rel="manifest" />
+<title>Getting old guest accounts in Azure AD – BensiEgils</title>
+  <meta name="description" content="This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.
+# Needs permission User.Read.All $ClientID = &#39;&#39; $ClientSecret = &#39;&#39; $tenant_Id = &#39;&#39; # Connect to Graph # $Body = @{ Grant_Type = &#34;client_credentials&#34; resource = &#34;https://graph.microsoft.com&#34; client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri &#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0&#34; -Method POST -Body $Body # Variable Collections # $Headers = @{ &#39;Content-Type&#39; = &#34;application/json&#34; &#39;Authorization&#39; = &#34;Bearer $($ConnectGraph.access_token)&#34; } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ &#39;Authorization&#39; = &#34;Bearer $AccessToken&#34; } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults &#43;= $Results.value $Uri = $Results.&#39;@odata.nextLink&#39; } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = &#34;https://graph.microsoft.com/beta/users&#34; $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result &#43;= New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq &#39;Guest&#39;) { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host &#34;No User data found&#34; } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq &#34;TRUE&#34;} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests&#43;&#43; #Write-Host &#34;Processing&#34; $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34; #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/ " /><link rel="canonical" href="http://localhost:1313/bensiegils/posts/2023-04-26-old-guest-accounts/" itemprop="url" />
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Getting old guest accounts in Azure AD | BensiEgils</title>
-<meta name="keywords" content="azure, msgraph">
-<meta name="description" content="This is a rewrite from here office365itpros.com
+<meta property="og:title" content="Getting old guest accounts in Azure AD">
+<meta
+  property="og:description"
+  content="
+    
+      This is a rewrite from here office365itpros.com
 I have added some more properties to the report.
 And use msgraph instead of mggraph.
+
+
 # Needs permission User.Read.All
 
 $ClientID = &#39;&#39;
@@ -115,1048 +127,578 @@ $Report | Sort Age -Descending | Format-Table -AutoSize
 Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34;
 
 #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/
-">
-<meta name="author" content="Benedikt Gabriel Egilsson">
-<link rel="canonical" href="http://localhost:1313/posts/2023-04-26-old-guest-accounts/">
-<<<<<<< HEAD
-<link crossorigin="anonymous" href="/assets/css/stylesheet.2d0325420c619a782224fbdbc50e6417d66f71c30e5607ad7ddb5b0ecce5d6cc.css" integrity="sha256-LQMlQgxhmngiJPvbxQ5kF9ZvccMOVgetfdtbDszl1sw=" rel="preload stylesheet" as="style">
-=======
-<link crossorigin="anonymous" href="/assets/css/stylesheet.c4ed1b680c91e8fe56dd269cacca84b1bbedcb34583cee1c5ddf7ad3cd9055ff.css" integrity="sha256-xO0baAyR6P5W3SacrMqEsbvtyzRYPO4cXd96082QVf8=" rel="preload stylesheet" as="style">
->>>>>>> 002-the-site-must
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2023-04-26-old-guest-accounts/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
-            }
-        }
-
-    </style>
-</noscript><meta property="og:url" content="http://localhost:1313/posts/2023-04-26-old-guest-accounts/">
-  <meta property="og:site_name" content="BensiEgils">
-  <meta property="og:title" content="Getting old guest accounts in Azure AD">
-  <meta property="og:description" content="This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.
-# Needs permission User.Read.All $ClientID = &#39;&#39; $ClientSecret = &#39;&#39; $tenant_Id = &#39;&#39; # Connect to Graph # $Body = @{ Grant_Type = &#34;client_credentials&#34; resource = &#34;https://graph.microsoft.com&#34; client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri &#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0&#34; -Method POST -Body $Body # Variable Collections # $Headers = @{ &#39;Content-Type&#39; = &#34;application/json&#34; &#39;Authorization&#39; = &#34;Bearer $($ConnectGraph.access_token)&#34; } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ &#39;Authorization&#39; = &#34;Bearer $AccessToken&#34; } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults &#43;= $Results.value $Uri = $Results.&#39;@odata.nextLink&#39; } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = &#34;https://graph.microsoft.com/beta/users&#34; $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result &#43;= New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq &#39;Guest&#39;) { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host &#34;No User data found&#34; } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq &#34;TRUE&#34;} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests&#43;&#43; #Write-Host &#34;Processing&#34; $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34; #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/ ">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2023-04-26T23:00:49+00:00">
-    <meta property="article:modified_time" content="2023-04-26T23:00:49+00:00">
-    <meta property="article:tag" content="Azure">
-    <meta property="article:tag" content="Msgraph">
-      <meta property="og:image" content="http://localhost:1313/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://localhost:1313/">
-<meta name="twitter:title" content="Getting old guest accounts in Azure AD">
-<meta name="twitter:description" content="This is a rewrite from here office365itpros.com
-I have added some more properties to the report.
-And use msgraph instead of mggraph.
-# Needs permission User.Read.All
-
-$ClientID = &#39;&#39;
-$ClientSecret = &#39;&#39;
-$tenant_Id = &#39;&#39;
-# Connect to Graph #
-
-$Body = @{    
-  Grant_Type    = &#34;client_credentials&#34;
-  resource      = &#34;https://graph.microsoft.com&#34;
-  client_id     = $clientId
-  client_secret = $clientSecret
-} 
   
-$ConnectGraph = Invoke-RestMethod -Uri &#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0&#34; -Method POST -Body $Body
+    
 
-# Variable Collections #
-
-$Headers = @{
-  &#39;Content-Type&#39;  = &#34;application/json&#34;
-  &#39;Authorization&#39; = &#34;Bearer $($ConnectGraph.access_token)&#34;
-}
-
-$token = $ConnectGraph.access_token
-
-# Force TLS 1.2.
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-function Get-GraphData {
-  param (
-      [parameter(Mandatory)]
-      [string]$AccessToken,
-      
-      [parameter(Mandatory)]
-      [string]$Uri
-  )
-
-  $Headers = @{
-      &#39;Authorization&#39; = &#34;Bearer $AccessToken&#34;
-  }
-
-  do {
-      $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
-
-      $QueryResults &#43;= $Results.value
-
-      $Uri = $Results.&#39;@odata.nextLink&#39;
-  } while ($Uri)
-
-  return $QueryResults
-}
-#This request get users list with signInActivity.
-$uri = &#34;https://graph.microsoft.com/beta/users&#34;
- 
-$Result = @()
-[array]$Response = Get-GraphData -AccessToken $Token -Uri $uri
-
-if ($Response) {
-  ForEach ($Respons in $Response) {
-      $Result &#43;= New-Object PSObject -property $([ordered]@{ 
-      DisplayName = $Respons.displayName
-      UserPrincipalName = $Respons.userPrincipalName
-      UsageLocation = $Respons.usageLocation
-      Contry = $Respons.country
-      LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null}
-      IsLicensed  = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false }
-      IsGuestUser  = if ($Respons.userType -eq &#39;Guest&#39;) { $true } else { $false }
-      RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime
-      onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName
   
-      })
-  }
-
-}
-else {
-  Write-Host &#34;No User data found&#34;
-}
-
-$GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq &#34;TRUE&#34;}
-
-$GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here.
-#$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName
-$Today = (Get-Date); $StaleGuests = 0
-$Report = [System.Collections.Generic.List[Object]]::new()
-# Check each account and find those over 365 days old
-ForEach ($Guest in $GuestUsers) {
-   $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days
-   If ($AADAccountAge -gt $GuestAccountAge) {
-      $StaleGuests&#43;&#43;
-      #Write-Host &#34;Processing&#34; $Guest.DisplayName
-      $i = 0; $GroupNames = $Null
-      # Find what Microsoft 365 Groups the guest belongs to... if any
-      $ReportLine = [PSCustomObject]@{
-           UPN     = $Guest.UserPrincipalName
-           Name    = $Guest.DisplayName
-           Age     = $AADAccountAge
-           Created = $Guest.RefreshTokensValidFromDateTime  
-           }      
-     $Report.Add($ReportLine) }
-}
-# Output the report
-$Report | Sort Age -Descending | Format-Table -AutoSize
-Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34;
-
-#reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/
-">
 
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "http://localhost:1313/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "Getting old guest accounts in Azure AD",
-      "item": "http://localhost:1313/posts/2023-04-26-old-guest-accounts/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Getting old guest accounts in Azure AD",
-  "name": "Getting old guest accounts in Azure AD",
-  "description": "This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.\n# Needs permission User.Read.All $ClientID = \u0026#39;\u0026#39; $ClientSecret = \u0026#39;\u0026#39; $tenant_Id = \u0026#39;\u0026#39; # Connect to Graph # $Body = @{ Grant_Type = \u0026#34;client_credentials\u0026#34; resource = \u0026#34;https://graph.microsoft.com\u0026#34; client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri \u0026#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0\u0026#34; -Method POST -Body $Body # Variable Collections # $Headers = @{ \u0026#39;Content-Type\u0026#39; = \u0026#34;application/json\u0026#34; \u0026#39;Authorization\u0026#39; = \u0026#34;Bearer $($ConnectGraph.access_token)\u0026#34; } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ \u0026#39;Authorization\u0026#39; = \u0026#34;Bearer $AccessToken\u0026#34; } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults += $Results.value $Uri = $Results.\u0026#39;@odata.nextLink\u0026#39; } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = \u0026#34;https://graph.microsoft.com/beta/users\u0026#34; $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result += New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq \u0026#39;Guest\u0026#39;) { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host \u0026#34;No User data found\u0026#34; } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq \u0026#34;TRUE\u0026#34;} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter \u0026#34;UserType eq \u0026#39;Guest\u0026#39;\u0026#34; | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests++ #Write-Host \u0026#34;Processing\u0026#34; $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host \u0026#34;Found\u0026#34; $StaleGuests \u0026#34;stale guest accounts.\u0026#34; #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/ ",
-  "keywords": [
-    "azure", "msgraph"
-  ],
-  "articleBody": "This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.\n# Needs permission User.Read.All $ClientID = '' $ClientSecret = '' $tenant_Id = '' # Connect to Graph # $Body = @{ Grant_Type = \"client_credentials\" resource = \"https://graph.microsoft.com\" client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri \"https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0\" -Method POST -Body $Body # Variable Collections # $Headers = @{ 'Content-Type' = \"application/json\" 'Authorization' = \"Bearer $($ConnectGraph.access_token)\" } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ 'Authorization' = \"Bearer $AccessToken\" } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults += $Results.value $Uri = $Results.'@odata.nextLink' } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = \"https://graph.microsoft.com/beta/users\" $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result += New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq 'Guest') { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host \"No User data found\" } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq \"TRUE\"} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter \"UserType eq 'Guest'\" | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests++ #Write-Host \"Processing\" $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host \"Found\" $StaleGuests \"stale guest accounts.\" #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/ ",
-  "wordCount" : "368",
-  "inLanguage": "en",
-  "image": "http://localhost:1313/","datePublished": "2023-04-26T23:00:49Z",
-  "dateModified": "2023-04-26T23:00:49Z",
-  "author":{
-    "@type": "Person",
-    "name": "Benedikt Gabriel Egilsson"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "http://localhost:1313/posts/2023-04-26-old-guest-accounts/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "BensiEgils",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "http://localhost:1313/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-</script>
-
-<header class="header">
-    <nav class="nav">
-        <div class="logo">
-<<<<<<< HEAD
-            <a href="http://localhost:1313/" accesskey="h" title="BensiEgils (Alt + H)">BensiEgils</a>
-=======
-            <a href="http://localhost:1313/" accesskey="h" title="BensiEgils (Alt + H)">
-                <img src="http://localhost:1313/assets/img/logo/BensiLogo.png" alt="" aria-label="logo"
-                    height="35">BensiEgils</a>
->>>>>>> 002-the-site-must
-            <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-                        <path d="m19 3-2 8-8 2 8 2 2 8 2-8 8-2-8-2-2-8Z"></path>
-                    </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <path
-                            d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4">
-                        </path>
-                    </svg>
-                </button>
-                <ul class="lang-switch"><li>|</li>
-                </ul>
-            </div>
-        </div>
-<<<<<<< HEAD
-        <ul id="menu">
-            <li>
-                <a href="http://localhost:1313/categories/" title="Categories">
-                    <span>Categories</span>
-                </a>
-            </li>
-            <li>
-                <a href="http://localhost:1313/tags/" title="Tags">
-                    <span>Tags</span>
-                </a>
-            </li>
-            <li>
-                <a href="http://localhost:1313/archives/" title="Archives">
-                    <span>Archives</span>
-                </a>
-            </li>
-        </ul>
-=======
-        
-        
-        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
->>>>>>> 002-the-site-must
-    </nav>
-</header>
-
-
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-content">
-        
-        <div class="site-info">
-        </div>
-
-        
-        <nav class="sidebar-nav">
-            <ul class="nav-list">
-                <li class="nav-item">
-                    <a href="http://localhost:1313/" class="nav-link">
-                        <i class="nav-icon">🏠</i>
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost:1313/categories/" class="nav-link">
-                        <i class="nav-icon"></i>
-                        <span>Categories</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost:1313/tags/" class="nav-link">
-                        <i class="nav-icon"></i>
-                        <span>Tags</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost:1313/archives/" class="nav-link">
-                        <i class="nav-icon"></i>
-                        <span>Archives</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost:1313/about/" class="nav-link">
-                        <i class="nav-icon"></i>
-                        <span>About</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="/categories/" class="nav-link">
-                        <i class="nav-icon">📁</i>
-                        <span>Categories</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="/tags/" class="nav-link">
-                        <i class="nav-icon">🏷️</i>
-                        <span>Tags</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="/archives/" class="nav-link">
-                        <i class="nav-icon">📚</i>
-                        <span>Archives</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="/about/" class="nav-link">
-                        <i class="nav-icon">👤</i>
-                        <span>About</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        
-        <div class="categories-tree">
-            <h4 class="tree-title">Categories</h4>
-            <ul class="category-list">
-                <li class="category-item">
-                    <a href="/categories/automation" class="category-link">
-                        <span class="category-name">Automation</span>
-                        <span class="category-count">(4)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/azure" class="category-link">
-                        <span class="category-name">Azure</span>
-                        <span class="category-count">(3)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/hyper-v" class="category-link">
-                        <span class="category-name">Hyper-V</span>
-                        <span class="category-count">(1)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/monitor" class="category-link">
-                        <span class="category-name">Monitor</span>
-                        <span class="category-count">(1)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/msgraph" class="category-link">
-                        <span class="category-name">Msgraph</span>
-                        <span class="category-count">(6)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/security" class="category-link">
-                        <span class="category-name">Security</span>
-                        <span class="category-count">(1)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/terraform" class="category-link">
-                        <span class="category-name">Terraform</span>
-                        <span class="category-count">(1)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/tools" class="category-link">
-                        <span class="category-name">Tools</span>
-                        <span class="category-count">(1)</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a href="/categories/usage" class="category-link">
-                        <span class="category-name">Usage</span>
-                        <span class="category-count">(3)</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        
-        <div class="social-links">
-            <h4 class="social-title">Connect</h4>
-            <ul class="social-list">
-                <li class="social-item">
-                    <a href="https://twitter.com/lubenz007" target="_blank" rel="noopener noreferrer" class="social-link" title="twitter">
-                        twitter
-                    </a>
-                </li>
-                <li class="social-item">
-                    <a href="https://github.com/lubenz007" target="_blank" rel="noopener noreferrer" class="social-link" title="github">
-                        github
-                    </a>
-                </li>
-                <li class="social-item">
-                    <a href="https://www.linkedin.com/in/benedikt-gabr%c3%adel-egilsson-b7295684" target="_blank" rel="noopener noreferrer" class="social-link" title="linkedin">
-                        linkedin
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</aside>
-
-
-<div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-<style>
- 
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 260px;
-    height: 100vh;
-    background-color: var(--sidebar-bg);
-    border-right: 1px solid var(--border-color);
-    z-index: 1000;
-    transform: translateX(0);
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-    padding-top: 80px;  
-}
-
-.sidebar-content {
-    padding: 1.5rem 1rem;
-}
-
-.site-info {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.profile-img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-}
-
-.profile-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.profile-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin: 0;
-}
-
-.sidebar-nav {
-    margin-bottom: 2rem;
-}
-
-.nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.nav-item {
-    margin-bottom: 0.5rem;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s ease;
-}
-
-.nav-link:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.nav-icon {
-    margin-right: 0.75rem;
-    font-size: 1.1rem;
-}
-
-.categories-tree {
-    margin-bottom: 2rem;
-}
-
-.tree-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-color);
-    padding: 0 1rem;
-}
-
-.category-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.category-item {
-    margin-bottom: 0.25rem;
-}
-
-.category-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease;
-}
-
-.category-link:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.category-count {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
-
-.category-link:hover .category-count {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.social-links {
-    margin-top: auto;
-}
-
-.social-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-color);
-    padding: 0 1rem;
-}
-
-.social-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.social-item {
-    margin-bottom: 0.25rem;
-}
-
-.social-link {
-    display: block;
-    padding: 0.5rem 1rem;
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease;
-}
-
-.social-link:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
- 
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
     
-    .sidebar.open {
-        transform: translateX(0);
-    }
+  ">
+<meta
+  property="og:type"
+  content="
+    article
+  ">
+<meta property="og:url" content="http://localhost:1313/bensiegils/posts/2023-04-26-old-guest-accounts/"><meta property="article:section" content="posts">
+
+<meta
+  property="article:published_time"
+  content="2023-04-26T23:00:49+00:00">
+
+
+<meta
+  property="article:modified_time"
+  content="2025-09-28T18:19:45+00:00">
+
+
+
+  <meta itemprop="name" content="Getting old guest accounts in Azure AD">
+  <meta itemprop="description" content="This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.
+# Needs permission User.Read.All $ClientID = &#39;&#39; $ClientSecret = &#39;&#39; $tenant_Id = &#39;&#39; # Connect to Graph # $Body = @{ Grant_Type = &#34;client_credentials&#34; resource = &#34;https://graph.microsoft.com&#34; client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri &#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0&#34; -Method POST -Body $Body # Variable Collections # $Headers = @{ &#39;Content-Type&#39; = &#34;application/json&#34; &#39;Authorization&#39; = &#34;Bearer $($ConnectGraph.access_token)&#34; } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ &#39;Authorization&#39; = &#34;Bearer $AccessToken&#34; } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults &#43;= $Results.value $Uri = $Results.&#39;@odata.nextLink&#39; } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = &#34;https://graph.microsoft.com/beta/users&#34; $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result &#43;= New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq &#39;Guest&#39;) { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host &#34;No User data found&#34; } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq &#34;TRUE&#34;} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests&#43;&#43; #Write-Host &#34;Processing&#34; $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34; #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/">
+  <meta itemprop="datePublished" content="2023-04-26T23:00:49+00:00">
+  <meta itemprop="dateModified" content="2025-09-28T18:19:45+00:00">
+  <meta itemprop="wordCount" content="368">
+  <meta itemprop="keywords" content="Azure,Msgraph">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Getting old guest accounts in Azure AD">
+  <meta name="twitter:description" content="This is a rewrite from here office365itpros.com I have added some more properties to the report. And use msgraph instead of mggraph.
+# Needs permission User.Read.All $ClientID = &#39;&#39; $ClientSecret = &#39;&#39; $tenant_Id = &#39;&#39; # Connect to Graph # $Body = @{ Grant_Type = &#34;client_credentials&#34; resource = &#34;https://graph.microsoft.com&#34; client_id = $clientId client_secret = $clientSecret } $ConnectGraph = Invoke-RestMethod -Uri &#34;https://login.microsoft.com/$tenant_Id/oauth2/token?api-version=1.0&#34; -Method POST -Body $Body # Variable Collections # $Headers = @{ &#39;Content-Type&#39; = &#34;application/json&#34; &#39;Authorization&#39; = &#34;Bearer $($ConnectGraph.access_token)&#34; } $token = $ConnectGraph.access_token # Force TLS 1.2. [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 function Get-GraphData { param ( [parameter(Mandatory)] [string]$AccessToken, [parameter(Mandatory)] [string]$Uri ) $Headers = @{ &#39;Authorization&#39; = &#34;Bearer $AccessToken&#34; } do { $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop $QueryResults &#43;= $Results.value $Uri = $Results.&#39;@odata.nextLink&#39; } while ($Uri) return $QueryResults } #This request get users list with signInActivity. $uri = &#34;https://graph.microsoft.com/beta/users&#34; $Result = @() [array]$Response = Get-GraphData -AccessToken $Token -Uri $uri if ($Response) { ForEach ($Respons in $Response) { $Result &#43;= New-Object PSObject -property $([ordered]@{ DisplayName = $Respons.displayName UserPrincipalName = $Respons.userPrincipalName UsageLocation = $Respons.usageLocation Contry = $Respons.country LastSignInDateTime = if($Respons.signInActivity.lastSignInDateTime) { [DateTime]$Respons.signInActivity.lastSignInDateTime } Else {$null} IsLicensed = if ($Respons.assignedLicenses.Count -ne 0) { $true } else { $false } IsGuestUser = if ($Respons.userType -eq &#39;Guest&#39;) { $true } else { $false } RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName }) } } else { Write-Host &#34;No User data found&#34; } $GuestUsers = $Result | Where-Object{$_.IsGuestUser -eq &#34;TRUE&#34;} $GuestAccountAge = 365 # Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here. #$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName $Today = (Get-Date); $StaleGuests = 0 $Report = [System.Collections.Generic.List[Object]]::new() # Check each account and find those over 365 days old ForEach ($Guest in $GuestUsers) { $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days If ($AADAccountAge -gt $GuestAccountAge) { $StaleGuests&#43;&#43; #Write-Host &#34;Processing&#34; $Guest.DisplayName $i = 0; $GroupNames = $Null # Find what Microsoft 365 Groups the guest belongs to... if any $ReportLine = [PSCustomObject]@{ UPN = $Guest.UserPrincipalName Name = $Guest.DisplayName Age = $AADAccountAge Created = $Guest.RefreshTokensValidFromDateTime } $Report.Add($ReportLine) } } # Output the report $Report | Sort Age -Descending | Format-Table -AutoSize Write-Host &#34;Found&#34; $StaleGuests &#34;stale guest accounts.&#34; #reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/">
+<link href="/bensiegils/css/compiled/main.css" rel="stylesheet" />
+    <link href="/bensiegils/css/variables.css" rel="stylesheet" />
+    <link href="/bensiegils/css/custom.css" rel="stylesheet" />
+
+  
+
+
+  <script>
     
-    .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    function setTheme(theme) {
+      document.documentElement.classList.remove("light", "dark");
+
+      if (theme !== "light" && theme !== "dark") {
+       theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+
+      document.documentElement.classList.add(theme);
+      document.documentElement.style.colorScheme = theme;
     }
+
+    setTheme("color-theme" in localStorage ? localStorage.getItem("color-theme") : 'system')
+
+  </script>
+
+  <script>
     
-    .sidebar-overlay.active {
-        opacity: 1;
-        visibility: visible;
+
+    if (localStorage.getItem('banner-closed')) {
+      document.documentElement.style.setProperty("--hextra-banner-height", "0px");
+      document.documentElement.classList.add("hextra-banner-hidden");
     }
-}
+  </script>
 
- 
-@media (min-width: 769px) {
-    .main {
-        margin-left: 260px;
-    }
-    
-    .header {
-        margin-left: 260px;
-    }
-}
+  
+  
+  </head>
+<body><div class="hextra-nav-container hx:sticky hx:top-0 hx:z-20 hx:w-full hx:bg-transparent hx:print:hidden">
+  <div
+    class="hextra-nav-container-blur hx:pointer-events-none hx:absolute hx:z-[-1] hx:h-full hx:w-full hx:bg-white hx:dark:bg-dark hx:shadow-[0_2px_4px_rgba(0,0,0,.02),0_1px_0_rgba(0,0,0,.06)] hx:contrast-more:shadow-[0_0_0_1px_#000] hx:dark:shadow-[0_-1px_0_rgba(255,255,255,.1)_inset] hx:contrast-more:dark:shadow-[0_0_0_1px_#fff]"
+  ></div>
 
- 
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-}
-
-.menu-toggle span {
-    width: 25px;
-    height: 3px;
-    background-color: var(--text-color);
-    margin: 3px 0;
-    transition: 0.3s;
-}
-
-@media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
-}
-</style>
-
-<script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggle = document.getElementById('menu-toggle');
-    
-    if (toggle && sidebar && overlay) {
-        toggle.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        });
-        
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        });
-    }
-});
-</script><main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
-    <h1 class="post-title entry-hint-parent">
-      Getting old guest accounts in Azure AD
-    </h1>
-    <div class="post-meta"><span title='2023-04-26 23:00:49 +0000 GMT'>April 26, 2023</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>368 words</span>&nbsp;·&nbsp;<span>Benedikt Gabriel Egilsson</span>
-
+  <nav class="hextra-max-navbar-width hx:mx-auto hx:flex hx:items-center hx:justify-end hx:gap-2 hx:h-16 hx:px-6">
+    <a class="hx:flex hx:items-center hx:hover:opacity-75 hx:ltr:mr-auto hx:rtl:ml-auto" href="/bensiegils/">
+    <img class="hx:mr-2 hx:block hx:dark:hidden" src="/bensiegils/images/logo.svg" alt="Logo" height="20" width="20" />
+    <img class="hx:mr-2 hx:hidden hx:dark:block" src="/bensiegils/images/logo.svg" alt="Dark Logo" height="20" width="20" />
+    <span class="hx:mr-2 hx:font-extrabold hx:inline hx:select-none" title="BensiEgils">BensiEgils</span>
+</a>
+<a
+  title=""
+  href="/bensiegils/posts"
+  
+  class="hx:text-sm hx:contrast-more:text-gray-700 hx:contrast-more:dark:text-gray-100 hx:relative hx:-ml-2 hx:hidden hx:whitespace-nowrap hx:p-2 hx:md:inline-flex hx:items-center hx:gap-1 hx:font-medium"
+><span class="hx:text-center">Blog</span>
+</a><button type="button" aria-label="Menu" class="hextra-hamburger-menu hx:cursor-pointer hx:-mr-2 hx:rounded-sm hx:p-2 hx:active:bg-gray-400/20 hx:md:hidden"><svg height=24 fill="none" viewBox="0 0 24 24" stroke="currentColor"><g><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8H20"></path></g><g><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16H20"></path></g></svg></button>
+  </nav>
 </div>
-  </header> 
-  <div class="post-content"><p>This is a rewrite from <a href="https://office365itpros.com/2019/10/15/report-old-guest-accounts/">here</a> office365itpros.com
-I have added some more properties to the report.
-And use msgraph instead of mggraph.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-powershell" data-lang="powershell"><span class="line"><span class="cl"><span class="c"># Needs permission User.Read.All</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$ClientID</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$ClientSecret</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$tenant_Id</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
-</span></span><span class="line"><span class="cl"><span class="c"># Connect to Graph #</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$Body</span> <span class="p">=</span> <span class="vm">@</span><span class="p">{</span>    
-</span></span><span class="line"><span class="cl">  <span class="n">Grant_Type</span>    <span class="p">=</span> <span class="s2">&#34;client_credentials&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">resource</span>      <span class="p">=</span> <span class="s2">&#34;https://graph.microsoft.com&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">client_id</span>     <span class="p">=</span> <span class="nv">$clientId</span>
-</span></span><span class="line"><span class="cl">  <span class="n">client_secret</span> <span class="p">=</span> <span class="nv">$clientSecret</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> 
-</span></span><span class="line"><span class="cl">  
-</span></span><span class="line"><span class="cl"><span class="nv">$ConnectGraph</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">&#34;https://login.microsoft.com/</span><span class="nv">$tenant_Id</span><span class="s2">/oauth2/token?api-version=1.0&#34;</span> <span class="n">-Method</span> <span class="n">POST</span> <span class="n">-Body</span> <span class="nv">$Body</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c"># Variable Collections #</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$Headers</span> <span class="p">=</span> <span class="vm">@</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="s1">&#39;Content-Type&#39;</span>  <span class="p">=</span> <span class="s2">&#34;application/json&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="s1">&#39;Authorization&#39;</span> <span class="p">=</span> <span class="s2">&#34;Bearer </span><span class="p">$(</span><span class="nv">$ConnectGraph</span><span class="p">.</span><span class="n">access_token</span><span class="p">)</span><span class="s2">&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$token</span> <span class="p">=</span> <span class="nv">$ConnectGraph</span><span class="p">.</span><span class="py">access_token</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c"># Force TLS 1.2.</span>
-</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="no">Net.ServicePointManager</span><span class="p">]::</span><span class="n">SecurityProtocol</span> <span class="p">=</span> <span class="p">[</span><span class="no">Net.SecurityProtocolType</span><span class="p">]::</span><span class="n">Tls12</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">function</span><span class="w"> </span><span class="nb">Get-GraphData</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">param</span> <span class="p">(</span>
-</span></span><span class="line"><span class="cl">      <span class="p">[</span><span class="nb">parameter</span><span class="p">(</span><span class="na">Mandatory</span><span class="p">)]</span>
-</span></span><span class="line"><span class="cl">      <span class="p">[</span><span class="no">string</span><span class="p">]</span><span class="nv">$AccessToken</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">      
-</span></span><span class="line"><span class="cl">      <span class="p">[</span><span class="nb">parameter</span><span class="p">(</span><span class="na">Mandatory</span><span class="p">)]</span>
-</span></span><span class="line"><span class="cl">      <span class="p">[</span><span class="no">string</span><span class="p">]</span><span class="nv">$Uri</span>
-</span></span><span class="line"><span class="cl">  <span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="nv">$Headers</span> <span class="p">=</span> <span class="vm">@</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="s1">&#39;Authorization&#39;</span> <span class="p">=</span> <span class="s2">&#34;Bearer </span><span class="nv">$AccessToken</span><span class="s2">&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="k">do</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nv">$Results</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="nv">$Uri</span> <span class="n">-Headers</span> <span class="nv">$Headers</span> <span class="n">-ErrorAction</span> <span class="n">Stop</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="nv">$QueryResults</span> <span class="p">+=</span> <span class="nv">$Results</span><span class="p">.</span><span class="py">value</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">      <span class="nv">$Uri</span> <span class="p">=</span> <span class="nv">$Results</span><span class="p">.</span><span class="s1">&#39;@odata.nextLink&#39;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nv">$Uri</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nv">$QueryResults</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="c">#This request get users list with signInActivity.</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$uri</span> <span class="p">=</span> <span class="s2">&#34;https://graph.microsoft.com/beta/users&#34;</span>
-</span></span><span class="line"><span class="cl"> 
-</span></span><span class="line"><span class="cl"><span class="nv">$Result</span> <span class="p">=</span> <span class="vm">@</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="no">array</span><span class="p">]</span><span class="nv">$Response</span> <span class="p">=</span> <span class="nb">Get-GraphData</span> <span class="n">-AccessToken</span> <span class="nv">$Token</span> <span class="n">-Uri</span> <span class="nv">$uri</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nv">$Response</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">ForEach</span> <span class="p">(</span><span class="nv">$Respons</span> <span class="k">in</span> <span class="nv">$Response</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nv">$Result</span> <span class="p">+=</span> <span class="nb">New-Object</span> <span class="n">PSObject</span> <span class="n">-property</span> <span class="vm">$</span><span class="p">([</span><span class="no">ordered</span><span class="p">]</span><span class="vm">@</span><span class="p">{</span> 
-</span></span><span class="line"><span class="cl">      <span class="n">DisplayName</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">displayName</span>
-</span></span><span class="line"><span class="cl">      <span class="n">UserPrincipalName</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">userPrincipalName</span>
-</span></span><span class="line"><span class="cl">      <span class="n">UsageLocation</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">usageLocation</span>
-</span></span><span class="line"><span class="cl">      <span class="n">Contry</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">country</span>
-</span></span><span class="line"><span class="cl">      <span class="n">LastSignInDateTime</span> <span class="p">=</span> <span class="k">if</span><span class="p">(</span><span class="nv">$Respons</span><span class="p">.</span><span class="py">signInActivity</span><span class="p">.</span><span class="n">lastSignInDateTime</span><span class="p">)</span> <span class="p">{</span> <span class="p">[</span><span class="no">DateTime</span><span class="p">]</span><span class="nv">$Respons</span><span class="p">.</span><span class="py">signInActivity</span><span class="p">.</span><span class="py">lastSignInDateTime</span> <span class="p">}</span> <span class="k">Else</span> <span class="p">{</span><span class="vm">$null</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="n">IsLicensed</span>  <span class="p">=</span> <span class="k">if</span> <span class="p">(</span><span class="nv">$Respons</span><span class="p">.</span><span class="py">assignedLicenses</span><span class="p">.</span><span class="py">Count</span> <span class="o">-ne</span> <span class="mf">0</span><span class="p">)</span> <span class="p">{</span> <span class="vm">$true</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="vm">$false</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="n">IsGuestUser</span>  <span class="p">=</span> <span class="k">if</span> <span class="p">(</span><span class="nv">$Respons</span><span class="p">.</span><span class="py">userType</span> <span class="o">-eq</span> <span class="s1">&#39;Guest&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="vm">$true</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="vm">$false</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="n">RefreshTokensValidFromDateTime</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">RefreshTokensValidFromDateTime</span>
-</span></span><span class="line"><span class="cl">      <span class="n">onPremisesDistinguishedName</span> <span class="p">=</span> <span class="nv">$Respons</span><span class="p">.</span><span class="py">onPremisesDistinguishedName</span>
-</span></span><span class="line"><span class="cl">  
-</span></span><span class="line"><span class="cl">      <span class="p">})</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nb">Write-Host</span> <span class="s2">&#34;No User data found&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$GuestUsers</span> <span class="p">=</span> <span class="nv">$Result</span> <span class="p">|</span> <span class="nb">Where-Object</span><span class="p">{</span><span class="nv">$_</span><span class="p">.</span><span class="py">IsGuestUser</span> <span class="o">-eq</span> <span class="s2">&#34;TRUE&#34;</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">$GuestAccountAge</span> <span class="p">=</span> <span class="mf">365</span> <span class="c"># Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here.</span>
-</span></span><span class="line"><span class="cl"><span class="c">#$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$Today</span> <span class="p">=</span> <span class="p">(</span><span class="nb">Get-Date</span><span class="p">);</span> <span class="nv">$StaleGuests</span> <span class="p">=</span> <span class="mf">0</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$Report</span> <span class="p">=</span> <span class="p">[</span><span class="no">System.Collections.Generic.List[Object]</span><span class="p">]::</span><span class="n">new</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="c"># Check each account and find those over 365 days old</span>
-</span></span><span class="line"><span class="cl"><span class="k">ForEach</span> <span class="p">(</span><span class="nv">$Guest</span> <span class="k">in</span> <span class="nv">$GuestUsers</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nv">$AADAccountAge</span> <span class="p">=</span> <span class="p">(</span><span class="nv">$Guest</span><span class="p">.</span><span class="py">RefreshTokensValidFromDateTime</span> <span class="p">|</span> <span class="nb">New-TimeSpan</span><span class="p">).</span><span class="py">Days</span>
-</span></span><span class="line"><span class="cl">   <span class="k">If</span> <span class="p">(</span><span class="nv">$AADAccountAge</span> <span class="o">-gt</span> <span class="nv">$GuestAccountAge</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nv">$StaleGuests</span><span class="p">++</span>
-</span></span><span class="line"><span class="cl">      <span class="c">#Write-Host &#34;Processing&#34; $Guest.DisplayName</span>
-</span></span><span class="line"><span class="cl">      <span class="nv">$i</span> <span class="p">=</span> <span class="mf">0</span><span class="p">;</span> <span class="nv">$GroupNames</span> <span class="p">=</span> <span class="vm">$Null</span>
-</span></span><span class="line"><span class="cl">      <span class="c"># Find what Microsoft 365 Groups the guest belongs to... if any</span>
-</span></span><span class="line"><span class="cl">      <span class="nv">$ReportLine</span> <span class="p">=</span> <span class="p">[</span><span class="no">PSCustomObject</span><span class="p">]</span><span class="vm">@</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">           <span class="n">UPN</span>     <span class="p">=</span> <span class="nv">$Guest</span><span class="p">.</span><span class="py">UserPrincipalName</span>
-</span></span><span class="line"><span class="cl">           <span class="n">Name</span>    <span class="p">=</span> <span class="nv">$Guest</span><span class="p">.</span><span class="py">DisplayName</span>
-</span></span><span class="line"><span class="cl">           <span class="n">Age</span>     <span class="p">=</span> <span class="nv">$AADAccountAge</span>
-</span></span><span class="line"><span class="cl">           <span class="n">Created</span> <span class="p">=</span> <span class="nv">$Guest</span><span class="p">.</span><span class="py">RefreshTokensValidFromDateTime</span>  
-</span></span><span class="line"><span class="cl">           <span class="p">}</span>      
-</span></span><span class="line"><span class="cl">     <span class="nv">$Report</span><span class="p">.</span><span class="py">Add</span><span class="p">(</span><span class="nv">$ReportLine</span><span class="p">)</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="c"># Output the report</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$Report</span> <span class="p">|</span> <span class="nb">Sort </span><span class="n">Age</span> <span class="n">-Descending</span> <span class="p">|</span> <span class="nb">Format-Table</span> <span class="n">-AutoSize</span>
-</span></span><span class="line"><span class="cl"><span class="nb">Write-Host</span> <span class="s2">&#34;Found&#34;</span> <span class="nv">$StaleGuests</span> <span class="s2">&#34;stale guest accounts.&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c">#reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/</span>
-</span></span></code></pre></div>
 
+  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+    <aside class="hextra-sidebar-container hx:flex hx:flex-col hx:print:hidden hx:md:top-16 hx:md:shrink-0 hx:md:w-64 hx:md:self-start hx:max-md:[transform:translate3d(0,-100%,0)] hx:md:hidden hx:xl:block">
+  
+  <div class="hx:px-4 hx:pt-4 hx:md:hidden">
+    <div class="hextra-search-wrapper hx:relative hx:md:w-64">
+  <div class="hx:relative hx:flex hx:items-center hx:text-gray-900 hx:contrast-more:text-gray-800 hx:dark:text-gray-300 hx:contrast-more:dark:text-gray-300">
+    <input
+      placeholder="Search..."
+      class="hextra-search-input hx:focus:hextra-focus hx:block hx:w-full hx:appearance-none hx:rounded-lg hx:px-3 hx:py-2 hx:transition-colors hx:text-base hx:leading-tight hx:md:text-sm hx:bg-black/[.05] hx:dark:bg-gray-50/10 hx:focus:bg-white hx:dark:focus:bg-dark hx:placeholder:text-gray-500 hx:dark:placeholder:text-gray-400 hx:contrast-more:border hx:contrast-more:border-current"
+      type="search"
+      value=""
+      spellcheck="false"
+    />
+    <kbd
+      class="hx:absolute hx:my-1.5 hx:select-none hx:ltr:right-1.5 hx:rtl:left-1.5 hx:h-5 hx:rounded-sm hx:bg-white hx:px-1.5 hx:font-mono hx:text-[10px] hx:font-medium hx:text-gray-500 hx:border hx:border-gray-200 hx:dark:border-gray-100/20 hx:dark:bg-dark/50 hx:contrast-more:border-current hx:contrast-more:text-current hx:contrast-more:dark:border-current hx:items-center hx:gap-1 hx:transition-opacity hx:pointer-events-none hx:hidden hx:sm:flex"
+    >
+      CTRL K
+    </kbd>
   </div>
 
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/azure/">Azure</a></li>
-      <li><a href="http://localhost:1313/tags/msgraph/">Msgraph</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/2023-05-03-azure-cost-cli/">
-    <span class="title">« Prev</span>
-    <br>
-    <span>Azure Cost CLI</span>
-  </a>
-  <a class="next" href="http://localhost:1313/posts/2023-04-22-aztfexport/">
-    <span class="title">Next »</span>
-    <br>
-    <span>Getting started with Terraform and Azure</span>
-  </a>
-</nav>
+  <div>
+    <ul
+      class="hextra-search-results hextra-scrollbar hx:hidden hx:border hx:border-gray-200 hx:bg-white hx:text-gray-100 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:absolute hx:top-full hx:z-20 hx:mt-2 hx:overflow-auto hx:overscroll-contain hx:rounded-xl hx:py-2.5 hx:shadow-xl hx:max-h-[min(calc(50vh-11rem-env(safe-area-inset-bottom)),400px)] hx:md:max-h-[min(calc(100vh-5rem-env(safe-area-inset-bottom)),400px)] hx:inset-x-0 hx:ltr:md:left-auto hx:rtl:md:right-auto hx:contrast-more:border hx:contrast-more:border-gray-900 hx:contrast-more:dark:border-gray-50 hx:w-screen hx:min-h-[100px] hx:max-w-[min(calc(100vw-2rem),calc(100%+20rem))]"
+      style="transition: max-height 0.2s ease 0s;"
+    ></ul>
+  </div>
+</div>
 
-
-<ul class="share-buttons">
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on x"
-            href="https://x.com/intent/tweet/?text=Getting%20old%20guest%20accounts%20in%20Azure%20AD&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f&amp;hashtags=azure%2cmsgraph">
-            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f&amp;title=Getting%20old%20guest%20accounts%20in%20Azure%20AD&amp;summary=Getting%20old%20guest%20accounts%20in%20Azure%20AD&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f">
-            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on reddit"
-            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f&title=Getting%20old%20guest%20accounts%20in%20Azure%20AD">
-            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on facebook"
-            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f">
-            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on whatsapp"
-            href="https://api.whatsapp.com/send?text=Getting%20old%20guest%20accounts%20in%20Azure%20AD%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f">
-            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on telegram"
-            href="https://telegram.me/share/url?text=Getting%20old%20guest%20accounts%20in%20Azure%20AD&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f">
-            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
-                <path
-                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
-            </svg>
-        </a>
-    </li>
-    <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share Getting old guest accounts in Azure AD on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=Getting%20old%20guest%20accounts%20in%20Azure%20AD&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f2023-04-26-old-guest-accounts%2f">
-            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
-                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
-                <path
-                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
-            </svg>
-        </a>
-    </li>
-</ul>
-
-  </footer>
-</article>
-    </main>
+  </div>
+  <div class="hextra-scrollbar hx:overflow-y-auto hx:overflow-x-hidden hx:p-4 hx:grow hx:md:h-[calc(100vh-var(--navbar-height)-var(--menu-height))]">
+    <ul class="hx:flex hx:flex-col hx:gap-1 hx:md:hidden">
+      
+      
+          <li class=""><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/about/"
     
-<footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">BensiEgils</a></span> · 
+  >About Me
+    </a></li>
+          <li class=""><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/archives/"
+    
+  >Archives
+    </a></li>
+          <li class="open"><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/"
+    
+  >Blog Posts
+        <span class="hextra-sidebar-collapsible-button"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="hx:h-[18px] hx:min-w-[18px] hx:rounded-xs hx:p-0.5 hx:hover:bg-gray-800/5 hx:dark:hover:bg-gray-100/5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" class="hx:origin-center hx:transition-transform hx:rtl:-rotate-180"></path></svg></span>
+    </a><div class="hx:ltr:pr-0 hx:overflow-hidden">
+        <ul class='hx:relative hx:flex hx:flex-col hx:gap-1 hx:before:absolute hx:before:inset-y-1 hx:before:w-px hx:before:bg-gray-200 hx:before:content-[""] hx:ltr:ml-3 hx:ltr:pl-3 hx:ltr:before:left-0 hx:rtl:mr-3 hx:rtl:pr-3 hx:rtl:before:right-0 hx:dark:before:bg-neutral-800'><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2025-08-19-move-vmware-azure/"
+    
+  >Migrating from VMware to Azure using Azure Files
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2024-06-23-gspro-controlbox/"
+    
+  >GSPRO Control box
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-10-15-outofdiskspace-teams/"
+    
+  >Arc - Diskspace Monitoring - Teams)
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-10-08-azurearc-ssh/"
+    
+  >Azure Arc - (Azure Cli - ssh - rdp)
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-09-30-hyper-v-tool/"
+    
+  >hyper-v-tool
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-05-28-defendercloudesecurescore-/"
+    
+  >Get Azure Defender for Cloud score Via API
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-05-17-azureusageresource/"
+    
+  >Monitor Azure Usage for a subscription
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-05-13-azureusage/"
+    
+  >Monitor Azure usage with github actions
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-05-10-three-tool/"
+    
+  >Three great tools for Azure
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-05-03-azure-cost-cli/"
+    
+  >Azure Cost CLI
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col open"><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hextra-sidebar-active-item hx:bg-primary-100 hx:font-semibold hx:text-primary-800 hx:contrast-more:border hx:contrast-more:border-primary-500 hx:dark:bg-primary-400/10 hx:dark:text-primary-600 hx:contrast-more:dark:border-primary-500"
+    href="/bensiegils/posts/2023-04-26-old-guest-accounts/"
+    
+  >Getting old guest accounts in Azure AD
+    </a>
+  
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-04-22-aztfexport/"
+    
+  >Getting started with Terraform and Azure
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-04-07-apps-exp/"
+    
+  >Apps Expiration Azure AD
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-04-06-speedtest/"
+    
+  >Powershell Speedtest
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-04-04-hottub/"
+    
+  >Esp32 Hot tub controller
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-04-04-upgrade-hyper/"
+    
+  >Upgrade Hyper-V Hosts with Azure Arc
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-01-04-license-report/"
+    
+  >Getting licenses assigned to user accounts
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-03-23-sgraph-securescore/"
+    
+  >MS Graph API - Get Secure Score for tenant
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-03-23-sgraph-api/"
+    
+  >Getting Started with MSGraph API
+    </a>
+              
+            </li><li class="hx:flex hx:flex-col "><a
+    class="hx:flex hx:items-center hx:justify-between hx:gap-2 hx:cursor-pointer hx:rounded-sm hx:px-2 hx:py-1.5 hx:text-sm hx:transition-colors [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] [word-break:break-word]
+      hx:text-gray-500 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:contrast-more:border hx:contrast-more:border-transparent hx:contrast-more:text-gray-900 hx:contrast-more:hover:border-gray-900 hx:dark:text-neutral-400 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:contrast-more:dark:text-gray-50 hx:contrast-more:dark:hover:border-gray-50"
+    href="/bensiegils/posts/2023-03-23-sgraph-users/"
+    
+  >MS Graph API - Get User info
+    </a>
+              
+            </li></ul>
+      </div></li>
+    </ul>
 
-    <span>
-        Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
-    </svg>
-</a>
+    <div class="hx:max-xl:hidden hx:h-0 hx:w-64 hx:shrink-0"></div></div>
+  
+  
+    <div class="hx:md:hidden  hx:sticky hx:bottom-0 hx:max-h-(--menu-height) hx:bg-white hx:dark:bg-dark hx:mx-4 hx:py-4 hx:shadow-[0_-12px_16px_#fff] hx:flex hx:items-center hx:gap-2 hx:border-gray-200 hx:dark:border-neutral-800 hx:dark:shadow-[0_-12px_16px_#111] hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:shadow-none hx:border-t" data-toggle-animation="show"><div class="hx:flex hx:grow hx:flex-col"><div class="hx:flex hx:justify-items-start hx:group" data-theme="light">
+  <button
+    title="Change theme"
+    data-state="closed"
+    data-location="bottom"
+    class="hextra-theme-toggle hx:cursor-pointer hx:rounded-md hx:text-left hx:font-medium hx:h-7 hx:px-2 hx:text-xs hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:font-medium hx:text-gray-600 hx:transition-colors hx:dark:text-gray-400 hx:grow"
+    type="button"
+    aria-label="Change theme"
+  >
+    <div class="hx:flex hx:items-center hx:gap-2 hx:capitalize"><svg height=12 class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden">Light</span><svg height=12 class="hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg><span class="hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden">Dark</span><svg height=12 class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"  fill="currentColor">
+  <path d="M 11.996094,2 C 6.4986225,2.0192368 2.03125,6.5024993 2.03125,12 c 0,5.497501 4.4673725,9.980763 9.964844,10 H 12 12.0039 c 5.497471,-0.01924 9.964844,-4.502499 9.964844,-10 0,-5.4975007 -4.467373,-9.9807632 -9.964844,-10 H 12 Z M 12,4 c 4.417218,0.017598 7.96875,3.5822356 7.96875,8 0,4.417764 -3.551532,7.982402 -7.96875,8 z" />
+</svg>
+<span class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden">System</span></div>
+  </button>
+  <ul
+    class="hextra-theme-toggle-options hx:hidden hx:z-20 hx:max-h-64 hx:overflow-auto hx:rounded-md hx:ring-1 hx:ring-black/5 hx:bg-white hx:py-1 hx:text-sm hx:shadow-lg hx:dark:ring-white/20 hx:dark:bg-neutral-800"
+    style="position: fixed; inset: auto auto 0px 0px; margin: 0px; min-width: 100px;"
+    data-theme="light"
+  >
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="light"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        Light
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="dark"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        Dark
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="system"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        System
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+  </ul>
+</div></div></div></aside>
+    
+<nav class="hextra-toc hx:order-last hx:hidden hx:w-64 hx:shrink-0 hx:xl:block hx:print:hidden hx:px-4" aria-label="table of contents">
+    <div class="hextra-scrollbar hx:sticky hx:top-16 hx:overflow-y-auto hx:pr-4 hx:pt-6 hx:text-sm [hyphens:auto] hx:max-h-[calc(100vh-var(--navbar-height)-env(safe-area-inset-bottom))] hx:ltr:-mr-4 hx:rtl:-ml-4">
+      <div class=" hx:sticky hx:bottom-0 hx:flex hx:flex-col hx:items-start hx:gap-2 hx:pb-8 hx:border-gray-200 hx:dark:border-neutral-800 hx:contrast-more:border-t hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:border-neutral-400">
+        <button aria-hidden="true" id="backToTop" onClick="scrollUp();" class="hx:cursor-pointer hx:transition-all hx:duration-75 hx:opacity-0 hx:text-xs hx:font-medium hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50">
+          <span>Scroll to top</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hx:inline hx:ltr:ml-1 hx:rtl:mr-1 hx:h-3.5 hx:w-3.5 hx:rounded-full hx:border hx:border-gray-500 hx:hover:border-gray-900 hx:dark:border-gray-400 hx:dark:hover:border-gray-100 hx:contrast-more:border-gray-800 hx:contrast-more:dark:border-gray-50">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
 
-<script>
-    let menu = document.getElementById('menu')
-    if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
+    <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main class="hx:w-full hx:min-w-0 hx:max-w-6xl hx:px-6 hx:pt-4 hx:md:px-12">
+        
+        <br class="hx:mt-1.5 hx:text-sm" />
+        <h1 class="hx:text-center hx:mt-2 hx:text-4xl hx:font-bold hx:tracking-tight hx:text-slate-900 hx:dark:text-slate-100">Getting old guest accounts in Azure AD</h1>
+        <div class="hx:mb-16"></div>
+        <div class="content">
+          <p>This is a rewrite from <a href="https://office365itpros.com/2019/10/15/report-old-guest-accounts/"target="_blank" rel="noopener">here</a> office365itpros.com
+I have added some more properties to the report.
+And use msgraph instead of mggraph.</p>
+<div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code">
 
-</script>
-<script>
-    var mybutton = document.getElementById("top-link");
-    window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
-        } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
-        }
-    };
+<div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># Needs permission User.Read.All</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ClientID = <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>$ClientSecret = <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>$tenant_Id = <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Connect to Graph #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$Body = @{    
+</span></span><span style="display:flex;"><span>  Grant_Type    = <span style="color:#e6db74">&#34;client_credentials&#34;</span>
+</span></span><span style="display:flex;"><span>  resource      = <span style="color:#e6db74">&#34;https://graph.microsoft.com&#34;</span>
+</span></span><span style="display:flex;"><span>  client_id     = $clientId
+</span></span><span style="display:flex;"><span>  client_secret = $clientSecret
+</span></span><span style="display:flex;"><span>} 
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>$ConnectGraph = Invoke-RestMethod -Uri <span style="color:#e6db74">&#34;https://login.microsoft.com/</span>$tenant_Id<span style="color:#e6db74">/oauth2/token?api-version=1.0&#34;</span> -Method POST -Body $Body
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Variable Collections #</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$Headers = @{
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;Content-Type&#39;</span>  = <span style="color:#e6db74">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;Authorization&#39;</span> = <span style="color:#e6db74">&#34;Bearer </span>$($ConnectGraph.access_token)<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$token = $ConnectGraph.access_token
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Force TLS 1.2.</span>
+</span></span><span style="display:flex;"><span>[<span style="color:#66d9ef">Net.ServicePointManager</span>]::SecurityProtocol = [<span style="color:#66d9ef">Net.SecurityProtocolType</span>]::Tls12
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> Get-GraphData {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">param</span> (
+</span></span><span style="display:flex;"><span>      [parameter(<span style="color:#a6e22e">Mandatory</span>)]
+</span></span><span style="display:flex;"><span>      [<span style="color:#66d9ef">string</span>]$AccessToken,
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>      [parameter(<span style="color:#a6e22e">Mandatory</span>)]
+</span></span><span style="display:flex;"><span>      [<span style="color:#66d9ef">string</span>]$Uri
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  $Headers = @{
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#39;Authorization&#39;</span> = <span style="color:#e6db74">&#34;Bearer </span>$AccessToken<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>      $Results = Invoke-RestMethod -Uri $Uri -Headers $Headers -ErrorAction Stop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      $QueryResults += $Results.value
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      $Uri = $Results.<span style="color:#e6db74">&#39;@odata.nextLink&#39;</span>
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">while</span> ($Uri)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> $QueryResults
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#This request get users list with signInActivity.</span>
+</span></span><span style="display:flex;"><span>$uri = <span style="color:#e6db74">&#34;https://graph.microsoft.com/beta/users&#34;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>$Result = @()
+</span></span><span style="display:flex;"><span>[<span style="color:#66d9ef">array</span>]$Response = Get-GraphData -AccessToken $Token -Uri $uri
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ($Response) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ForEach</span> ($Respons <span style="color:#66d9ef">in</span> $Response) {
+</span></span><span style="display:flex;"><span>      $Result += New-Object PSObject -property $([<span style="color:#66d9ef">ordered</span>]@{ 
+</span></span><span style="display:flex;"><span>      DisplayName = $Respons.displayName
+</span></span><span style="display:flex;"><span>      UserPrincipalName = $Respons.userPrincipalName
+</span></span><span style="display:flex;"><span>      UsageLocation = $Respons.usageLocation
+</span></span><span style="display:flex;"><span>      Contry = $Respons.country
+</span></span><span style="display:flex;"><span>      LastSignInDateTime = <span style="color:#66d9ef">if</span>($Respons.signInActivity.lastSignInDateTime) { [<span style="color:#66d9ef">DateTime</span>]$Respons.signInActivity.lastSignInDateTime } <span style="color:#66d9ef">Else</span> {$null}
+</span></span><span style="display:flex;"><span>      IsLicensed  = <span style="color:#66d9ef">if</span> ($Respons.assignedLicenses.Count <span style="color:#f92672">-ne</span> <span style="color:#ae81ff">0</span>) { $true } <span style="color:#66d9ef">else</span> { $false }
+</span></span><span style="display:flex;"><span>      IsGuestUser  = <span style="color:#66d9ef">if</span> ($Respons.userType <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#39;Guest&#39;</span>) { $true } <span style="color:#66d9ef">else</span> { $false }
+</span></span><span style="display:flex;"><span>      RefreshTokensValidFromDateTime = $Respons.RefreshTokensValidFromDateTime
+</span></span><span style="display:flex;"><span>      onPremisesDistinguishedName = $Respons.onPremisesDistinguishedName
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>      })
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>  Write-Host <span style="color:#e6db74">&#34;No User data found&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$GuestUsers = $Result | Where-Object{$_.IsGuestUser <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;TRUE&#34;</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$GuestAccountAge = <span style="color:#ae81ff">365</span> <span style="color:#75715e"># Value used for guest age comparison. If you want this to be a different value (like 30 days), change this here.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#$GuestUsers = $users.value -All $true -Filter &#34;UserType eq &#39;Guest&#39;&#34; | Sort DisplayName</span>
+</span></span><span style="display:flex;"><span>$Today = (Get-Date); $StaleGuests = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>$Report = [<span style="color:#66d9ef">System.Collections.Generic.List[Object]</span>]::new()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check each account and find those over 365 days old</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ForEach</span> ($Guest <span style="color:#66d9ef">in</span> $GuestUsers) {
+</span></span><span style="display:flex;"><span>   $AADAccountAge = ($Guest.RefreshTokensValidFromDateTime | New-TimeSpan).Days
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">If</span> ($AADAccountAge <span style="color:#f92672">-gt</span> $GuestAccountAge) {
+</span></span><span style="display:flex;"><span>      $StaleGuests++
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#Write-Host &#34;Processing&#34; $Guest.DisplayName</span>
+</span></span><span style="display:flex;"><span>      $i = <span style="color:#ae81ff">0</span>; $GroupNames = $Null
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Find what Microsoft 365 Groups the guest belongs to... if any</span>
+</span></span><span style="display:flex;"><span>      $ReportLine = [<span style="color:#66d9ef">PSCustomObject</span>]@{
+</span></span><span style="display:flex;"><span>           UPN     = $Guest.UserPrincipalName
+</span></span><span style="display:flex;"><span>           Name    = $Guest.DisplayName
+</span></span><span style="display:flex;"><span>           Age     = $AADAccountAge
+</span></span><span style="display:flex;"><span>           Created = $Guest.RefreshTokensValidFromDateTime  
+</span></span><span style="display:flex;"><span>           }      
+</span></span><span style="display:flex;"><span>     $Report.Add($ReportLine) }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Output the report</span>
+</span></span><span style="display:flex;"><span>$Report | Sort Age -Descending | Format-Table -AutoSize
+</span></span><span style="display:flex;"><span>Write-Host <span style="color:#e6db74">&#34;Found&#34;</span> $StaleGuests <span style="color:#e6db74">&#34;stale guest accounts.&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#reference: https://office365itpros.com/2019/10/15/report-old-guest-accounts/</span></span></span></code></pre></div></div><div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0">
+  <button
+    class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+    title="Copy code"
+  >
+    <div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"></div>
+<div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"></div>
+  </button>
+</div>
+</div>
 
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            document.body.classList.add('dark');
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
+        </div>
+        <div class="hx:mt-16"></div>
+        
+      </main>
+    </article>
+  </div>
 
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
-
-        function copyingDone() {
-            copybutton.innerHTML = 'copied!';
-            setTimeout(() => {
-                copybutton.innerHTML = 'copy';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
+      <footer class="hextra-footer hx:bg-gray-100 hx:pb-[env(safe-area-inset-bottom)] hx:dark:bg-neutral-900 hx:print:bg-transparent"><div class="hx:mx-auto hx:flex hx:gap-2 hx:py-2 hx:px-4 hextra-max-footer-width"><div class="hx:flex hx:justify-items-start hx:group" data-theme="light">
+  <button
+    title="Change theme"
+    data-state="closed"
+    data-location="bottom"
+    class="hextra-theme-toggle hx:cursor-pointer hx:rounded-md hx:text-left hx:font-medium hx:h-7 hx:px-2 hx:text-xs hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:font-medium hx:text-gray-600 hx:transition-colors hx:dark:text-gray-400 hx:grow"
+    type="button"
+    aria-label="Change theme"
+  >
+    <div class="hx:flex hx:items-center hx:gap-2 hx:capitalize"><svg height=12 class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden">Light</span><svg height=12 class="hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg><span class="hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden">Dark</span><svg height=12 class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"  fill="currentColor">
+  <path d="M 11.996094,2 C 6.4986225,2.0192368 2.03125,6.5024993 2.03125,12 c 0,5.497501 4.4673725,9.980763 9.964844,10 H 12 12.0039 c 5.497471,-0.01924 9.964844,-4.502499 9.964844,-10 0,-5.4975007 -4.467373,-9.9807632 -9.964844,-10 H 12 Z M 12,4 c 4.417218,0.017598 7.96875,3.5822356 7.96875,8 0,4.417764 -3.551532,7.982402 -7.96875,8 z" />
+</svg>
+<span class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden">System</span></div>
+  </button>
+  <ul
+    class="hextra-theme-toggle-options hx:hidden hx:z-20 hx:max-h-64 hx:overflow-auto hx:rounded-md hx:ring-1 hx:ring-black/5 hx:bg-white hx:py-1 hx:text-sm hx:shadow-lg hx:dark:ring-white/20 hx:dark:bg-neutral-800"
+    style="position: fixed; inset: auto auto 0px 0px; margin: 0px; min-width: 100px;"
+    data-theme="light"
+  >
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="light"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        Light
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=dark]:hidden hx:group-data-[theme=system]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="dark"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        Dark
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+    <li class="hx:flex hx:flex-col">
+      <p
+        data-item="system"
+        class="hx:text-gray-800 hx:dark:text-gray-100 hx:hover:bg-primary-50 hx:hover:text-primary-600 hx:hover:dark:bg-primary-500/10 hx:hover:dark:text-primary-600 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
+      >
+        System
+         <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3 hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden"><svg height=1em width=1em xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+      </p>
+    </li>
+  </ul>
+</div></div><hr class="hx:border-gray-200 hx:dark:border-neutral-800" /><div class="hextra-custom-footer hextra-max-footer-width hx:pl-[max(env(safe-area-inset-left),1.5rem)] hx:pr-[max(env(safe-area-inset-right),1.5rem)] hx:text-gray-600 hx:dark:text-gray-400"></div><div
+      class="hextra-max-footer-width hx:mx-auto hx:flex hx:justify-center hx:py-12 hx:pl-[max(env(safe-area-inset-left),1.5rem)] hx:pr-[max(env(safe-area-inset-right),1.5rem)] hx:text-gray-600 hx:dark:text-gray-400 hx:md:justify-start"
+    >
+      <div class="hx:flex hx:w-full hx:flex-col hx:items-center hx:sm:items-start"><div class="hx:font-semibold"><a class="hx:flex hx:text-sm hx:items-center hx:gap-1 hx:text-current" target="_blank" rel="noopener noreferrer" title="Hextra GitHub Homepage" href="https://github.com/imfing/hextra">
+    <span>Powered by Hextra<svg height=1em class="hx:inline-block hx:ltr:ml-1 hx:rtl:mr-1 hx:align-[-2.5px]" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="m 105.50024,22.224647 c -9.59169,-5.537563 -21.40871,-5.537563 -31.000093,0 L 39.054693,42.689119 C 29.463353,48.226675 23.55484,58.460531 23.55484,69.535642 v 40.928918 c 0,11.07542 5.908513,21.3092 15.499853,26.84652 l 35.445453,20.46446 c 9.591313,5.53732 21.408404,5.53732 31.000094,0 l 35.44507,-20.46446 c 9.59131,-5.53732 15.49985,-15.7711 15.49985,-26.84652 V 69.535642 c 0,-11.075111 -5.90854,-21.308967 -15.49985,-26.846523 z M 34.112797,85.737639 c -1.384445,2.397827 -1.384445,5.352099 0,7.749927 l 24.781554,42.922974 c 1.38437,2.39783 3.942853,3.87496 6.711592,3.87496 h 49.563107 c 2.76905,0 5.3273,-1.47713 6.71144,-3.87496 l 24.78194,-42.922974 c 1.38414,-2.397828 1.38414,-5.3521 0,-7.749927 L 121.88049,42.814746 c -1.38414,-2.397828 -3.94239,-3.874964 -6.71144,-3.874964 H 65.605944 c -2.768739,0 -5.327223,1.477059 -6.711592,3.874964 z" style="stroke-width:0.774993" /></svg></span>
+  </a></div></div>
+    </div></footer>
+    
+    <script defer src="/bensiegils/js/main.js" integrity=""></script>
+<script defer src="/bensiegils/js/flexsearch.9f5b5908f93ae86f1ecd4b043b799f580c2d1654e703dd9357d568ac41b2547a.js" integrity="sha256-n1tZCPk66G8ezUsEO3mfWAwtFlTnA92TV9VorEGyVHo=" crossorigin="anonymous"></script>
+        <script defer src="/bensiegils/en.search.js" integrity=""></script>
+  </body>
 </html>

@@ -1456,9 +1456,7 @@ simple command line tool to get the cost of your Azure subscription.&lt;/p&gt;
 &lt;li&gt;Send emails with cost reports&lt;/li&gt;
 &lt;li&gt;Perfect for automation and scheduled reporting&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h1&gt;Azure Cost Overview&lt;/h1&gt;&lt;blockquote class=&#34;white&#34;&gt;
-Accumulated cost for subscription id `0692777c-ed93-4a6a-85c7-144c24xxxx` from **1.5.2023** to **9.5.2023**
-&lt;/blockquote&gt;
+&lt;h1&gt;Azure Cost Overview&lt;/h1&gt;&lt;!-- raw HTML omitted --&gt;
 &lt;h2&gt;Totals&lt;span class=&#34;hx:absolute hx:-mt-20&#34; id=&#34;totals&#34;&gt;&lt;/span&gt;
     &lt;a href=&#34;#totals&#34; class=&#34;subheading-anchor&#34; aria-label=&#34;Permalink for this section&#34;&gt;&lt;/a&gt;&lt;/h2&gt;&lt;table&gt;
   &lt;thead&gt;
@@ -1695,7 +1693,7 @@ Accumulated cost for subscription id `0692777c-ed93-4a6a-85c7-144c24xxxx` from *
    &amp;#34;backuptest&amp;#34; : 4.07
    &amp;#34;alitis&amp;#34; : 2.22
    &amp;#34;test2&amp;#34; : 1.35
-&lt;/pre&gt;&lt;p&gt;&lt;sup&gt;Generated at 2023-05-09 23:33:20&lt;/sup&gt;&lt;/p&gt;
+&lt;/pre&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Generated at 2023-05-09 23:33:20&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
       </description>
     </item>
     
